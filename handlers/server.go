@@ -16,8 +16,14 @@ func StartHTTPServer() {
 
 	InitTemplates()
 
+	// Static file server for assets like CSS, JS, images
+	var staticFiles = http.FileServer(http.Dir("./static"))
+	http.Handle("/static/", http.StripPrefix("/static/", staticFiles))
+
 	// define routes
 	http.HandleFunc("/", Home)
+	http.HandleFunc("/tenancy", Tenancy)
+	http.HandleFunc("/contact", Contact)
 
 	logs.Logs(1, fmt.Sprintf("Server running on http://localhost%s", httpServer))
 	err := http.ListenAndServe(httpServer, nil)
