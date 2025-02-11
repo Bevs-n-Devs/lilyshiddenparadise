@@ -23,7 +23,7 @@ func StartHTTPServer() {
 	// define routes
 	http.HandleFunc("/", Home)
 	http.HandleFunc("/tenancy", Tenancy)
-	http.HandleFunc("/contact", Contact)
+	http.HandleFunc("/login", Login)
 
 	logs.Logs(1, fmt.Sprintf("Server running on http://localhost%s", httpServer))
 	err := http.ListenAndServe(httpServer, nil)
