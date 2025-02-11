@@ -154,7 +154,7 @@ p {
 }
 /* line 15, ../scss/layout/_nav.scss */
 .navbar-default .navbar-brand:hover {
-  color: #f2013f;
+  color: #FB0097;
 }
 /* line 19, ../scss/layout/_nav.scss */
 .navbar-default .navbar-brand span.thin {
@@ -163,11 +163,11 @@ p {
 /* line 24, ../scss/layout/_nav.scss */
 .navbar-default .navbar-toggle {
   border: none;
-  background-color: #f2013f;
+  background-color: #FB0097;
 }
 /* line 28, ../scss/layout/_nav.scss */
 .navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
-  background-color: #d90138;
+  background-color: #14962C;
 }
 /* line 32, ../scss/layout/_nav.scss */
 .navbar-default .navbar-toggle .icon-bar {
@@ -187,7 +187,7 @@ p {
 /* line 47, ../scss/layout/_nav.scss */
 .navbar-default .navbar-nav > li > a:hover {
   background-color: transparent;
-  color: #f2013f;
+  color: #FB0097;
 }
 /* line 52, ../scss/layout/_nav.scss */
 .navbar-default .navbar-nav > li > a:focus {
@@ -196,12 +196,12 @@ p {
 /* line 57, ../scss/layout/_nav.scss */
 .navbar-default .navbar-nav > li.active > a {
   background-color: #090909;
-  color: #f2013f;
+  color: #FB0097;
 }
 /* line 61, ../scss/layout/_nav.scss */
 .navbar-default .navbar-nav > li.active > a:hover {
   background-color: transparent;
-  color: #f2013f;
+  color: #FB0097;
 }
 /* line 67, ../scss/layout/_nav.scss */
 .navbar-default .navbar-collapse {
@@ -336,7 +336,7 @@ p {
   font-family: "Open sans", "Sans Serif";
   border-radius: 0;
   height: 60px;
-  background-color: #f2013f;
+  background-color: #14962C;
   color: #fff;
   font-size: 24px;
   font-weight: 800;
@@ -345,7 +345,7 @@ p {
 }
 /* line 12, ../scss/modules/_buttons.scss */
 .custom-button:hover {
-  background-color: #d90138;
+  background-color: #FB0097;
 }
 
 /* line 1, ../scss/modules/_sections.scss */
@@ -361,7 +361,7 @@ p {
 /* banner section */
 /* line 11, ../scss/modules/_sections.scss */
 .banner {
-  background-color: #f2013f;
+  background-color: white;
 }
 /* line 14, ../scss/modules/_sections.scss */
 .banner .container {
@@ -388,7 +388,7 @@ p {
 
 /* line 38, ../scss/modules/_sections.scss */
 .services {
-  background-color: #f2013f;
+  background-color: #FB0097;
 }
 
 /*cta*/
@@ -405,7 +405,7 @@ p {
 /*about banner*/
 /* line 55, ../scss/modules/_sections.scss */
 .about-banner {
-  background-color: #f2013f;
+  background-color: #FB0097;
 }
 
 /* line 59, ../scss/modules/_sections.scss */
@@ -439,7 +439,7 @@ p {
 /*address*/
 /* line 89, ../scss/modules/_sections.scss */
 .address {
-  background-color: #f2013f;
+  background-color: #FB0097;
 }
 /* line 92, ../scss/modules/_sections.scss */
 .address h1 {
@@ -586,7 +586,7 @@ p {
   width: 12px;
   height: 12px;
   margin: 0;
-  background-color: #F2013F;
+  background-color: #14962C;
 }
 
 /* =================  CAROUSEL CUSTOM FADE EFFECT ===================== */
