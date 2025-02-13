@@ -74,7 +74,7 @@
                     <div class="collapse navbar-collapse" id="top-navigation-bar">
                         <ul class="nav navbar-nav navbar-right">
                             <li class="active"><a href="/">Home</a></li>
-                            <li><a href="/tenancy">Tenancy</a></li>
+                            <li><a href="/form">Tenancy</a></li>
                             <li><a href="/login">Login</a></li>                            
                         </ul>
                     </div>
@@ -144,7 +144,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-wrapper">
-                          <form id="contact-form" action="inc/send_mail.php">
+                          <form id="contact-form" action="/submit" method="post">
                               <label for="fullName">Full Name:</label>
                               <input type="text" name="fullName" id="name" placeholder="your full name..." required>
                               <label for="dob">Date of Birth:</label>
@@ -173,16 +173,16 @@
                                 <option value="yes">Yes</option>
                                 <option value="no">No</option>
                               </select>
-                              <label for="whenWhyEvicted">If yes, When and Why?</label>
-                              <textarea type="text" name="whenWhyEvicted" id="whenWhyEvicted" placeholder="please explain when and why you were evicted..."></textarea>
+                              <label for="evictedReason">If yes, When and Why?</label>
+                              <textarea type="text" name="evictedReason" id="evictedReason" placeholder="please explain when and why you were evicted..."></textarea>
                               <label for="convicted">Have you ever been convicted of a felony?</label>
                               <select name="convicted" id="convicted" required>
                                 <option disabled value="">Please Select</option>
                                 <option value="yes">Yes</option>
                                 <option value="no">No</option>
                               </select>
-                              <label for="whenWhyConvicted">If yes, When and Why?</label>
-                              <textarea type="text" name="whenWhyConvicted" id="whenWhyConvicted" placeholder="please explain when and why you were convicted..."></textarea>
+                              <label for="convictedReason">If yes, When and Why?</label>
+                              <textarea type="text" name="convictedReason" id="convictedReason" placeholder="please explain when and why you were convicted..."></textarea>
                               <label for="smoke">Do You Smoke?</label>
                               <select name="smoke" id="smoke" required>
                                 <option disabled value="">Please Select</option>
@@ -216,16 +216,16 @@
                                 <option value="yes">Yes</option>
                                 <option value="no">No</option>
                               </select>
-                              <label for="whyRefusedRent">If yes, please explain why:</label>
-                              <textarea type="text" name="whyRefusedRent" id="whyRefusedRent" placeholder="please explain why you refused to pay rent..."></textarea>
-                              <label for="stabelIncome">Are There Any Circumstances That May Interrupt Your Income or Ability To Pay Rent?</label>
-                              <select name="stabelIncome" id="stableIncome" required>
+                              <label for="refusedRentReason">If yes, please explain why:</label>
+                              <textarea type="text" name="refusedRentReason" id="refusedRentReason" placeholder="please explain why you refused to pay rent..."></textarea>
+                              <label for="instabelIncome">Are There Any Circumstances That May Interrupt Your Income or Ability To Pay Rent?</label>
+                              <select name="instabelIncome" id="instabelIncome" required>
                                 <option disabled value="">Please Select</option>
                                 <option value="yes">Yes</option>
                                 <option value="no">No</option>
                               </select>
-                              <label for="whyStableIncome">If yes, Please Explain:</label>
-                              <textarea type="text" name="whyStableIncome" id="whyStableIncome" placeholder="please explain what circumstances may interrupt your income or ability to pay rent..."></textarea>
+                              <label for="incomeReason">If yes, Please Explain:</label>
+                              <textarea type="text" name="incomeReason" id="incomeReason" placeholder="please explain what circumstances may interrupt your income or ability to pay rent..."></textarea>
                               <input class="custom-button" type="submit" name="submit" value="send message">
                           </form> 
                     </div>
