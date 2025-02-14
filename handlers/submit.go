@@ -53,8 +53,8 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 		result := checkIfEvicted(ifEvicted, evictedReason)
 		// redirect to form page with error message
 		if !result {
-			logs.Logs(3, fmt.Sprintf("Invalid form data: %s", err.Error()))
-			http.Redirect(w, r, "/form", http.StatusSeeOther)
+			logs.Logs(3, "Invalid form data: Evicted reason not given.")
+			http.Redirect(w, r, "/form?evictedError=Invalid+form+data", http.StatusSeeOther)
 			return
 		}
 	}
@@ -62,7 +62,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	if ifConvicted == "yes" {
 		result := checkIfConvicted(ifConvicted, convictedReason)
 		if !result {
-			logs.Logs(3, fmt.Sprintf("Invalid form data: %s", err.Error()))
+			logs.Logs(3, "Invalid form data: Convicted reason not given.")
 			http.Redirect(w, r, "/form", http.StatusSeeOther)
 			return
 		}
@@ -71,7 +71,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	if ifVehicle == "yes" {
 		result := checkIfVehiclke(ifVehicle, vehicleReg)
 		if !result {
-			logs.Logs(3, fmt.Sprintf("Invalid form data: %s", err.Error()))
+			logs.Logs(3, "Invalid form data: Vehicle registration not given.")
 			http.Redirect(w, r, "/form", http.StatusSeeOther)
 			return
 		}
@@ -80,7 +80,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	if haveChildren == "yes" {
 		result := checkIfHaveChildren(haveChildren, children)
 		if !result {
-			logs.Logs(3, fmt.Sprintf("Invalid form data: %s", err.Error()))
+			logs.Logs(3, "Invalid form data: Children not given.")
 			http.Redirect(w, r, "/form", http.StatusSeeOther)
 			return
 		}
@@ -89,7 +89,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	if refusedRent == "yes" {
 		result := checkIfRefusedRent(refusedRent, refusedRentReason)
 		if !result {
-			logs.Logs(3, fmt.Sprintf("Invalid form data: %s", err.Error()))
+			logs.Logs(3, "Invalid form data: Refused rent reason not given.")
 			http.Redirect(w, r, "/form", http.StatusSeeOther)
 			return
 		}
@@ -98,7 +98,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	if instabelIncome == "yes" {
 		result := checkIfStableIncome(instabelIncome, incomeReason)
 		if !result {
-			logs.Logs(3, fmt.Sprintf("Invalid form data: %s", err.Error()))
+			logs.Logs(3, "Invalid form data: Income reason not given.")
 			http.Redirect(w, r, "/form", http.StatusSeeOther)
 			return
 		}
