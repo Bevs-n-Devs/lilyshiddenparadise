@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--meta tags ends-->
 
-    <title>Lilys Hidden Paradise | Tenancy Form</title>
+    <title>Lilys Hidden Paradise | Login</title>
 
     <!--- Links to google fonts -->
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,800%7cRoboto+Mono:400,700%7cMerriweather:300%7cAbril+Fatface'
@@ -74,7 +74,7 @@
                     <div class="collapse navbar-collapse" id="top-navigation-bar">
                         <ul class="nav navbar-nav navbar-right">
                             <li class="active"><a href="/">Home</a></li>
-                            <li><a href="/tenancy">Tenancy</a></li>
+                            <li><a href="/form">Tenancy</a></li>
                             <li><a href="/login">Login</a></li>                            
                         </ul>
                     </div>
@@ -149,9 +149,9 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-wrapper">
-                          <form id="contact-form" action="inc/send_mail.php">
+                          <form action="/submitLogin" method="post">
                               <label for="account">Account:</label>
-                              <input type="email" name="email" id="email" placeholder="your email or account name...">
+                              <input type="email" name="loginEmail" id="loginEmail" placeholder="your email or account name...">
                               <label for="message">Your Password:</label>
                               <input type="password" name="password" id="password" placeholder="your password...">
                               <input class="custom-button" type="submit" name="submit" value="Login">
