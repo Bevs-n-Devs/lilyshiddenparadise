@@ -12,7 +12,7 @@ var Templates *template.Template
 
 func InitTemplates() {
 	var err error
-	Templates, err = template.ParseGlob("./handlers/templates/*.html")
+	Templates, err = template.ParseGlob("./templates/*.html")
 	if err != nil {
 		logs.Logs(3, fmt.Sprintf("Error parsing templates: %s", err))
 		os.Exit(1)

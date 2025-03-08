@@ -185,6 +185,9 @@
                                 <option value="no">No</option>
                               </select>
                               <label for="convictedReason">If yes, When and Why?</label>
+                              {{ if .ConvictedError }}
+                                <p style="color: red;">{{ .ConvictedError }}</p>
+                              {{ end }}
                               <textarea type="text" name="convictedReason" id="convictedReason" placeholder="please explain when and why you were convicted..."></textarea>
                               <label for="smoke">Do You Smoke?</label>
                               <select name="smoke" id="smoke" required>
@@ -204,6 +207,10 @@
                                 <option value="yes">Yes</option>
                                 <option value="no">No</option>
                               </select>
+                              <label for="vehicleReg">If Yes, What Is The Vehicle Registration Number?</label>
+                              {{ if .VehicleError }}
+                                <p style="color: red;">{{ .VehicleError }}</p>
+                              {{ end }}
                               <input type="text" name="vehicleReg" placeholder="vehicle registration number" id="vehicleReg">
                               <label for="haveChildren">Do You Have Children?</label>
                               <select name="haveChildren" id="haveChildren" required>
@@ -212,6 +219,9 @@
                                 <option value="no">No</option>
                               </select>
                               <label for="children">If yes, How Many?</label>
+                              {{ if .ChildrenError }}
+                                <p style="color: red;">{{ .ChildrenError }}</p>
+                              {{ end }}
                               <textarea type="text" name="children" id="children" placeholder="how many children and their ages..."></textarea>
                               <label for="refusedRent">Have You Willfully Refused To Pay Rent?</label>
                               <select name="refusedRent" id="refusedRent" required>
@@ -220,14 +230,20 @@
                                 <option value="no">No</option>
                               </select>
                               <label for="refusedRentReason">If yes, please explain why:</label>
+                              {{ if .RefusedRentError }}
+                                <p style="color: red;">{{ .RefusedRentError }}</p>
+                              {{ end }}
                               <textarea type="text" name="refusedRentReason" id="refusedRentReason" placeholder="please explain why you refused to pay rent..."></textarea>
-                              <label for="instabelIncome">Are There Any Circumstances That May Interrupt Your Income or Ability To Pay Rent?</label>
-                              <select name="instabelIncome" id="instabelIncome" required>
+                              <label for="unstableIncome">Are There Any Circumstances That May Interrupt Your Income or Ability To Pay Rent?</label>
+                              <select name="unstableIncome" id="unstableIncome" required>
                                 <option disabled value="">Please Select</option>
                                 <option value="yes">Yes</option>
                                 <option value="no">No</option>
                               </select>
                               <label for="incomeReason">If yes, Please Explain:</label>
+                              {{ if .UnstableIncomeError }}
+                                <p style="color: red;">{{ .UnstableIncomeError }}</p>
+                              {{ end }}
                               <textarea type="text" name="incomeReason" id="incomeReason" placeholder="please explain what circumstances may interrupt your income or ability to pay rent..."></textarea>
                               <input class="custom-button" type="submit" name="submit" value="Submit Form">
                           </form> 

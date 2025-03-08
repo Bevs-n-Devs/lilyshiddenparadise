@@ -46,7 +46,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	children := r.FormValue("children")
 	refusedRent := r.FormValue("refusedRent")
 	refusedRentReason := r.FormValue("refusedRentReason")
-	instabelIncome := r.FormValue("instabelIncome")
+	unstableIncome := r.FormValue("unstableIncome")
 	incomeReason := r.FormValue("incomeReason")
 
 	if ifEvicted == "yes" {
@@ -54,7 +54,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 		// redirect to form page with error message
 		if !result {
 			logs.Logs(3, "Invalid form data: Evicted reason not given.")
-			http.Redirect(w, r, "/form?evictedError=Invalid+form+data", http.StatusSeeOther)
+			http.Redirect(w, r, "/form?evictedError=Evicted+reason+not+given", http.StatusSeeOther)
 			return
 		}
 	}
@@ -63,7 +63,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 		result := checkIfConvicted(ifConvicted, convictedReason)
 		if !result {
 			logs.Logs(3, "Invalid form data: Convicted reason not given.")
-			http.Redirect(w, r, "/form", http.StatusSeeOther)
+			http.Redirect(w, r, "/form?convictedError=Conviction+information+not+given", http.StatusSeeOther)
 			return
 		}
 	}
@@ -72,7 +72,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 		result := checkIfVehiclke(ifVehicle, vehicleReg)
 		if !result {
 			logs.Logs(3, "Invalid form data: Vehicle registration not given.")
-			http.Redirect(w, r, "/form", http.StatusSeeOther)
+			http.Redirect(w, r, "/form?vehicleError=Vehicle+registration+not+given", http.StatusSeeOther)
 			return
 		}
 	}
@@ -80,8 +80,8 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	if haveChildren == "yes" {
 		result := checkIfHaveChildren(haveChildren, children)
 		if !result {
-			logs.Logs(3, "Invalid form data: Children not given.")
-			http.Redirect(w, r, "/form", http.StatusSeeOther)
+			logs.Logs(3, "Invalid form data: Children information not given.")
+			http.Redirect(w, r, "/form?childrenError=Children+information+not+given", http.StatusSeeOther)
 			return
 		}
 	}
@@ -90,25 +90,26 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 		result := checkIfRefusedRent(refusedRent, refusedRentReason)
 		if !result {
 			logs.Logs(3, "Invalid form data: Refused rent reason not given.")
-			http.Redirect(w, r, "/form", http.StatusSeeOther)
+			http.Redirect(w, r, "/form?refusedRentError=Reason+for+refusing+rent+not+given", http.StatusSeeOther)
 			return
 		}
 	}
 
-	if instabelIncome == "yes" {
-		result := checkIfStableIncome(instabelIncome, incomeReason)
+	if unstableIncome == "yes" {
+		result := checkIfStableIncome(unstableIncome, incomeReason)
 		if !result {
 			logs.Logs(3, "Invalid form data: Income reason not given.")
-			http.Redirect(w, r, "/form", http.StatusSeeOther)
+			http.Redirect(w, r, "/form?unstableIncomeError=Reasons+for+unstable+income+not+given", http.StatusSeeOther)
 			return
 		}
 	}
 
 	// log form data (save to databse later on)
-	logMessage := fmt.Sprintf("Form data - Full Name: %s, Date of Birth: %s, Passport Number: %s, Phone Number: %s, Email: %s, Occupation: %s, Employer: %s, Employee Number: %s, Emergency Contact Name: %s, Emergency Contact Number: %s, Emergency Contact Address: %s, If Evicted: %s, Evicted Reason: %s, If Convicted: %s, Convicted Reason: %s, Smoke: %s, Pets: %s, If Vehicle: %s, Vehicle Reg: %s, Have Children: %s, Children: %s, Refused Rent: %s, Refused Rent Reason: %s, Instabel Income: %s, Income Reason: %s", fullName, dateOfBirth, passportNumber, phoneNumber, email, occupation, employer, employeeNumber, emergencyContactName, emergencyContactNumber, emergencyContactAddress, ifEvicted, evictedReason, ifConvicted, convictedReason, smoke, pets, ifVehicle, vehicleReg, haveChildren, children, refusedRent, refusedRentReason, instabelIncome, incomeReason)
+	logMessage := fmt.Sprintf("Form data - Full Name: %s, Date of Birth: %s, Passport Number: %s, Phone Number: %s, Email: %s, Occupation: %s, Employer: %s, Employee Number: %s, Emergency Contact Name: %s, Emergency Contact Number: %s, Emergency Contact Address: %s, If Evicted: %s, Evicted Reason: %s, If Convicted: %s, Convicted Reason: %s, Smoke: %s, Pets: %s, If Vehicle: %s, Vehicle Reg: %s, Have Children: %s, Children: %s, Refused Rent: %s, Refused Rent Reason: %s, Instabel Income: %s, Income Reason: %s", fullName, dateOfBirth, passportNumber, phoneNumber, email, occupation, employer, employeeNumber, emergencyContactName, emergencyContactNumber, emergencyContactAddress, ifEvicted, evictedReason, ifConvicted, convictedReason, smoke, pets, ifVehicle, vehicleReg, haveChildren, children, refusedRent, refusedRentReason, unstableIncome, incomeReason)
 	logs.Logs(1, logMessage)
 
 	// redirect to home page
+	logs.Logs(1, "Form data saved successfully. Redirecting to home page.")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -173,12 +174,12 @@ func checkIfRefusedRent(refusedRent, refusedRentReason string) bool {
 }
 
 /*
-Checks if instabelIncome is yes and incomeReason is empty;
+Checks if unstableIncome is yes and incomeReason is empty;
 returns false if invalid.
 */
 // Returns true if stableIncome is no and incomeReason is not empty
-func checkIfStableIncome(instabelIncome, incomeReason string) bool {
-	if instabelIncome == "yes" && incomeReason == "" {
+func checkIfStableIncome(unstableIncome, incomeReason string) bool {
+	if unstableIncome == "yes" && incomeReason == "" {
 		return false
 	}
 	return true
