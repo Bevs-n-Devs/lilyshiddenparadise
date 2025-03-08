@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en-US"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en-US"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en">
+
+<head>
+
+    <!--meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--meta tags ends-->
+
+    <title>Lilys Hidden Paradise | Tenancy Form</title>
+
+    <!--- Links to google fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,800%7cRoboto+Mono:400,700%7cMerriweather:300%7cAbril+Fatface'
+          rel='stylesheet'>
+    <!-- Links to fonts ends -->
+
+    <!-- Bootstrap stylesheet -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Icons -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+    <!-- Popup Images -->
+    <link rel="stylesheet" type="text/css" href="/static/css/magnific-popup.css">
+
+    <!-- css animation -->
+    <link rel="stylesheet" type="text/css" href="/static/css/animate.css">
+
+    <!-- custom stylesheets -->
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+  
+
+
+</head>
+
+<body>
+
+<!-- Start: Preloader section -->
+<div id="loader-wrapper">
+    <div id="loader"></div>
+</div>
+<!-- End: Preloader section -->
+
+<!-- DOCUMENT WRAPPER STARTS -->
+    <main>
+
+        <!-- MAIN HEADER STARTS-->
+            <header id="header">
+
+            <!-- TOP NAVIGATION -->
+            <nav class="top-navigation-bar navbar navbar-default navbar-fixed-top">
+                <div class="container">
+                <div class="row">
+                <div class="col-md-12">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" 
+                                data-toggle="collapse" data-target="#top-navigation-bar" 
+                                aria-expanded="false">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/">LHP</a>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="top-navigation-bar">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="active"><a href="/">Home</a></li>
+                            <li><a href="/form">Tenancy</a></li>
+                            <li><a href="/login">Login</a></li>                            
+                        </ul>
+                    </div>
+                    <!-- /.navbar-collapse -->
+                    </div>
+                    </div>
+                </div>
+                <!-- /.container-->
+            </nav>
+            <!-- TOP NAVIGATION ENDS -->
+
+        </header>
+        
+        <!-- main header ends-->
+        <section id="address" class="address page-top">
+            <div class="container">
+                <div class="row">
+                    
+                        <div class="col-md-6">
+                        <div class="address-wrapper wow fadeInUp" data-wow-delay="0.3s">
+                        <h1>Our Address</h1>
+                        <table class="address-table">
+                                <tbody>
+                                    <tr>
+                                        <td>Location</td>
+                                        <td>Bournes Village, St George<br>Barbados</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Phone:</td>
+                                        <td>+2462302047</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Email:</td>
+                                        <td>foobar@email.com</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Instagram:</td>
+                                        <td>account.com/pages/foobar</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </div>
+                    </div>
+                    <div class="col-md-6">
+                    <div class="map-wrapper wow fadeInUp" data-wow-delay="0.6s">
+                        <div id="map"></div>                     
+                    </div>
+                    </div>
+                    
+                    
+            </div>
+            </div>
+        </section>
+
+        <section id="email-us" class="email-us page">
+            <div class="container wow fadeInUp" data-wow-delay="0.3s">
+                <div class="row">
+                    
+                    <div class="col-md-6">
+                    <div class="email-wrapper">
+                        <h1>Tenancy Form</h1>
+                        <div class="section-snippet hidden-xs">
+                          <span class="snippet-heading">Prefer Printable Version?</span>
+                          <span style="color: #FB0097;">Click <a href="">here</a> to download the tenancy form which you can complete and hand back to us</span>  
+                        </div>
+                     </div>  
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-wrapper">
+                          <form action="/submit" method="post">
+                              <label for="fullName">Full Name:</label>
+                              <input type="text" name="fullName" id="name" placeholder="your full name..." required>
+                              <label for="dob">Date of Birth:</label>
+                              <input type="date" name="dob" id="dob" placeholder="your date of birth..." required>
+                              <label for="passportNumber">Passport Number:</label>
+                              <input type="text" name="passportNumber" id="passportNumber" placeholder="your passport number..." required>
+                              <label for="phoneNumber">Phone Number:</label>
+                              <input type="number" name="phoneNumber" id="phoneNumber" placeholder="your phone number..." required>
+                              <label for="email">Your email:</label>
+                              <input type="email" name="email" id="email" placeholder="your email.." required>
+                              <label for="occupation">Occupation:</label>
+                              <input type="text" name="occupation" id="occupation" placeholder="your occupation..." required>
+                              <label for="employedBy">Employed By:</label>
+                              <input type="text" name="employedBy" id="employedBy" placeholder="employed by..." required>
+                              <label for="workNumber">Work Number:</label>
+                              <input type="number" name="workNumber" id="workNumber" placeholder="your work number..." required>
+                              <label for="emergencyName">Emergency Name:</label>
+                              <input type="text" name="emergencyName" id="emergencyName" placeholder="emergency name..." required>
+                              <label for="emergencyNumber">Emergency Contact Number:</label>
+                              <input type="number" name="emergencyNumber" id="emergencyNumber" placeholder="your emergency contact number..." required>
+                              <label for="emergencyAddress">Emergency Contact Address:</label>
+                              <input type="text" name="emergencyAddress" id="emergencyAddress" placeholder="your emergency contact address..." required>
+                              <label for="evicted">Have You Ever Been Evicted?</label>
+                              <select name="evicted" id="evicted" required>
+                                <option disabled value="">Please Select</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                              </select>
+                              <label for="evictedReason">If yes, When and Why?</label>
+                              {{ if .EvictedError }}
+                                <p style="color: red;">{{ .EvictedError }}</p>
+                              {{ end }}
+                              <textarea type="text" name="evictedReason" id="evictedReason" placeholder="please explain when and why you were evicted..."></textarea>
+                              <label for="convicted">Have you ever been convicted of a felony?</label>
+                              <select name="convicted" id="convicted" required>
+                                <option disabled value="">Please Select</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                              </select>
+                              <label for="convictedReason">If yes, When and Why?</label>
+                              {{ if .ConvictedError }}
+                                <p style="color: red;">{{ .ConvictedError }}</p>
+                              {{ end }}
+                              <textarea type="text" name="convictedReason" id="convictedReason" placeholder="please explain when and why you were convicted..."></textarea>
+                              <label for="smoke">Do You Smoke?</label>
+                              <select name="smoke" id="smoke" required>
+                                <option disabled value="">Please Select</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                              </select>
+                              <label for="pets">Do You Have Pets?</label>
+                              <select name="pets" id="pets" required>
+                                <option disabled value="">Please Select</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                              </select>
+                              <label for="vehicle">Do You Have A Vehicle?</label>
+                              <select name="vehicle" id="vehicle" required>
+                                <option disabled value="">Please Select</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                              </select>
+                              <label for="vehicleReg">If Yes, What Is The Vehicle Registration Number?</label>
+                              {{ if .VehicleError }}
+                                <p style="color: red;">{{ .VehicleError }}</p>
+                              {{ end }}
+                              <input type="text" name="vehicleReg" placeholder="vehicle registration number" id="vehicleReg">
+                              <label for="haveChildren">Do You Have Children?</label>
+                              <select name="haveChildren" id="haveChildren" required>
+                                <option disabled value="">Please Select</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                              </select>
+                              <label for="children">If yes, How Many?</label>
+                              {{ if .ChildrenError }}
+                                <p style="color: red;">{{ .ChildrenError }}</p>
+                              {{ end }}
+                              <textarea type="text" name="children" id="children" placeholder="how many children and their ages..."></textarea>
+                              <label for="refusedRent">Have You Willfully Refused To Pay Rent?</label>
+                              <select name="refusedRent" id="refusedRent" required>
+                                <option disabled value="">Please Select</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                              </select>
+                              <label for="refusedRentReason">If yes, please explain why:</label>
+                              {{ if .RefusedRentError }}
+                                <p style="color: red;">{{ .RefusedRentError }}</p>
+                              {{ end }}
+                              <textarea type="text" name="refusedRentReason" id="refusedRentReason" placeholder="please explain why you refused to pay rent..."></textarea>
+                              <label for="unstableIncome">Are There Any Circumstances That May Interrupt Your Income or Ability To Pay Rent?</label>
+                              <select name="unstableIncome" id="unstableIncome" required>
+                                <option disabled value="">Please Select</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                              </select>
+                              <label for="incomeReason">If yes, Please Explain:</label>
+                              {{ if .UnstableIncomeError }}
+                                <p style="color: red;">{{ .UnstableIncomeError }}</p>
+                              {{ end }}
+                              <textarea type="text" name="incomeReason" id="incomeReason" placeholder="please explain what circumstances may interrupt your income or ability to pay rent..."></textarea>
+                              <input class="custom-button" type="submit" name="submit" value="Submit Form">
+                          </form> 
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+         <!-- footer section starts -->
+        <footer id="footer" class="footer">
+            <div class="container wow fadeInUp">
+                <div class="row">
+                    <div class="footer-wrapper clearfix">
+                    <div class="col-md-6 footer-left">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="footer-link footer-link-1">
+                                    <h4>Create Free Account</h4>
+                                    <ul>
+                                        <li><a href="#">View courses</a></li>
+                                        <li><a href="#">Discuss</a></li>
+                                        <li><a href="#">Suggest course</a></li>
+                                        <li><a href="#">View courses</a></li>
+                                        <li><a href="#">Discuss</a></li>
+                                        <li><a href="#">Suggest course</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="footer-link footer-link-2">
+                                    <h4>Create Free Account</h4>
+                                    <ul>
+                                        <li><a href="#">View courses</a></li>
+                                        <li><a href="#">Discuss</a></li>
+                                        <li><a href="#">Suggest course</a></li>
+                                        <li><a href="#">View courses</a></li>
+                                        <li><a href="#">Discuss</a></li>
+                                        <li><a href="#">Suggest course</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5 col-md-offset-1 footer-text">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip</p>
+                        <span>&copy; 2025 Created By <a href="https://akototech.org" target="_blank">Akoto Tech</a></span>
+                    </div>
+                    </div>
+                </div><!-- End: .row -->
+            </div><!-- End: .container-->
+        </footer>
+        <!-- footer section ends -->
+
+    </main>
+<!-- DOCUMENT WRAPPER ENDS -->
+
+
+
+<!-- SCRIPTS -->
+
+    <!-- jQuery (necessary for all the plugins) -->
+    <script src="/static/js/jquery-1.11.2.min.js"></script>
+
+    <script src="http://maps.google.com/maps/api/js"></script>
+    <script src="/static/js/gmaps.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.magnific-popup.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.easing.min.js"></script>
+    <script type="text/javascript" src="/static/js/wow.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.validate.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/main.js"></script>
+
+<!-- SCRIPTS ENDS -->
+</body>
+
+</html>
+
