@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
+	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
 )
 
 func SubmitForm(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +51,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	incomeReason := r.FormValue("incomeReason")
 
 	if ifEvicted == "yes" {
-		result := checkIfEvicted(ifEvicted, evictedReason)
+		result := utils.CheckIfEvicted(ifEvicted, evictedReason)
 		// redirect to form page with error message
 		if !result {
 			logs.Logs(logErr, "Invalid form data: Evicted reason not given.")
@@ -60,7 +61,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if ifConvicted == "yes" {
-		result := checkIfConvicted(ifConvicted, convictedReason)
+		result := utils.CheckIfConvicted(ifConvicted, convictedReason)
 		if !result {
 			logs.Logs(logErr, "Invalid form data: Convicted reason not given.")
 			http.Redirect(w, r, "/form?convictedError=Conviction+information+not+given", http.StatusSeeOther)
@@ -69,7 +70,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if ifVehicle == "yes" {
-		result := checkIfVehiclke(ifVehicle, vehicleReg)
+		result := utils.CheckIfVehicle(ifVehicle, vehicleReg)
 		if !result {
 			logs.Logs(logErr, "Invalid form data: Vehicle registration not given.")
 			http.Redirect(w, r, "/form?vehicleError=Vehicle+registration+not+given", http.StatusSeeOther)
@@ -78,7 +79,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if haveChildren == "yes" {
-		result := checkIfHaveChildren(haveChildren, children)
+		result := utils.CheckIfHaveChildren(haveChildren, children)
 		if !result {
 			logs.Logs(logErr, "Invalid form data: Children information not given.")
 			http.Redirect(w, r, "/form?childrenError=Children+information+not+given", http.StatusSeeOther)
@@ -87,7 +88,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if refusedRent == "yes" {
-		result := checkIfRefusedRent(refusedRent, refusedRentReason)
+		result := utils.CheckIfRefusedRent(refusedRent, refusedRentReason)
 		if !result {
 			logs.Logs(logErr, "Invalid form data: Refused rent reason not given.")
 			http.Redirect(w, r, "/form?refusedRentError=Reason+for+refusing+rent+not+given", http.StatusSeeOther)
@@ -96,7 +97,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if unstableIncome == "yes" {
-		result := checkIfStableIncome(unstableIncome, incomeReason)
+		result := utils.CheckIfStableIncome(unstableIncome, incomeReason)
 		if !result {
 			logs.Logs(logErr, "Invalid form data: Income reason not given.")
 			http.Redirect(w, r, "/form?unstableIncomeError=Reasons+for+unstable+income+not+given", http.StatusSeeOther)
@@ -111,84 +112,4 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	// redirect to home page
 	logs.Logs(logInfo, "Form data saved successfully. Redirecting to home page.")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
-}
-
-// TODO! Move these functions to utils package
-
-/*
-Checks if ifEvicted is yes and evictedReason is empty;
-returns false if invalid.
-
-Returns true if ifEvicted is yes and evictedReason is not empty
-*/
-func checkIfEvicted(ifEvicted, evictedReason string) bool {
-	if ifEvicted == "yes" && evictedReason == "" {
-		return false
-	}
-	return true
-}
-
-/*
-Checks if ifConvicted is yes and convictedReason is empty;
-returns false if invalid.
-
-Returns true if ifConvicted is yes and convictedReason is not empty
-*/
-func checkIfConvicted(ifConvicted, convictedReason string) bool {
-	if ifConvicted == "yes" && convictedReason == "" {
-		return false
-	}
-	return true
-}
-
-/*
-Checks if ifVehicle is yes and vehicleReg is empty;
-returns false if invalid.
-
-Returns true if ifVehicle is yes and vehicleReg is not empty
-*/
-func checkIfVehiclke(ifVehicle, vehicleReg string) bool {
-	if ifVehicle == "yes" && vehicleReg == "" {
-		return false
-	}
-	return true
-}
-
-/*
-Checks if haveChildren is yes and children is empty;
-returns false if invalid.
-
-Returns true if haveChildren is yes and children is not empty
-*/
-func checkIfHaveChildren(haveChildren, children string) bool {
-	if haveChildren == "yes" && children == "" {
-		return false
-	}
-	return true
-}
-
-/*
-Checks if refusedRent is yes and refusedRentReason is empty;
-returns false if invalid.
-
-Returns true if refusedRent is yes and refusedRentReason is not empty
-*/
-func checkIfRefusedRent(refusedRent, refusedRentReason string) bool {
-	if refusedRent == "yes" && refusedRentReason == "" {
-		return false
-	}
-	return true
-}
-
-/*
-Checks if unstableIncome is yes and incomeReason is empty;
-returns false if invalid.
-
-Returns true if stableIncome is no and incomeReason is not empty
-*/
-func checkIfStableIncome(unstableIncome, incomeReason string) bool {
-	if unstableIncome == "yes" && incomeReason == "" {
-		return false
-	}
-	return true
 }
