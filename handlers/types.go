@@ -3,10 +3,10 @@ package handlers
 import "html/template"
 
 const (
-	httpServer = ":9001"
-	logInfo    = 1
-	logWarn    = 2
-	logErr     = 3
+	localPort = ":9001"
+	logInfo   = 1
+	logWarn   = 2
+	logErr    = 3
 )
 
 var (

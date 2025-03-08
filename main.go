@@ -9,11 +9,13 @@ import (
 )
 
 const (
-	logErr = 3
+	logInfo = 1
+	logErr  = 3
 )
 
 func main() {
 	go logs.LogProcessor()
+	logs.Logs(logInfo, "Welcome to Lily's Hidden Paradise, a web app to manage tenants and landlords.")
 
 	err := db.ConnectDB()
 	if err != nil {

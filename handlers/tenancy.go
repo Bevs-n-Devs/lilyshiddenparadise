@@ -8,6 +8,7 @@ import (
 )
 
 func Tenancy(w http.ResponseWriter, r *http.Request) {
+	// collect any error messages
 	evictedError := r.URL.Query().Get("evictedError")
 	convictedError := r.URL.Query().Get("convictedError")
 	vehicleError := r.URL.Query().Get("vehicleError")
@@ -24,6 +25,7 @@ func Tenancy(w http.ResponseWriter, r *http.Request) {
 		UnstableIncomeError: unstableIncomeError,
 	}
 
+	// pass error messages to HTML template
 	err := Templates.ExecuteTemplate(w, "tenancy.html", data)
 	if err != nil {
 		logs.Logs(logErr, fmt.Sprintf("Unable to load tenancy page: %s", err.Error()))
