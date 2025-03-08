@@ -7,12 +7,8 @@ import (
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
 )
 
-const (
-	httpServer = ":9001"
-)
-
 func StartHTTPServer() {
-	logs.Logs(1, "Starting HTTP server...")
+	logs.Logs(logInfo, "Starting HTTP server...")
 
 	InitTemplates()
 
@@ -22,14 +18,14 @@ func StartHTTPServer() {
 
 	// define routes
 	http.HandleFunc("/", Home)
-	http.HandleFunc("/form", Tenancy)
+	// http.HandleFunc("/form", Tenancy)
 	http.HandleFunc("/login", Login)
 	http.HandleFunc("/submit", SubmitForm)
 
-	logs.Logs(1, fmt.Sprintf("Server running on http://localhost%s", httpServer))
+	logs.Logs(logInfo, fmt.Sprintf("Server running on http://localhost%s", httpServer))
 	err := http.ListenAndServe(httpServer, nil)
 	if err != nil {
-		logs.Logs(3, fmt.Sprintf("Error starting HTTP server: %s", err))
+		logs.Logs(logErr, fmt.Sprintf("Error starting HTTP server: %s", err))
 		return
 	}
 }

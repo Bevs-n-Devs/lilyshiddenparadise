@@ -8,6 +8,8 @@ const (
 	info   = "INFO: "
 	warn   = "WARNING! "
 	logErr = "ERROR! "
+	db     = "DATABASE: "
+	dbErr  = "DATABASE ERROR: "
 )
 
 func LogProcessor() {
@@ -16,7 +18,20 @@ func LogProcessor() {
 	}
 }
 
-// logType: 1 = info, 2 = warning, 3 = error
+/*
+Logs writes a log message to the log channel, prefixed with one of the log levels defined as constants above.
+The log levels are:
+
+1: INFO
+
+2: WARNING
+
+3: ERROR
+
+4: DATABASE
+
+5: DATABASE ERROR
+*/
 func Logs(logType int, logMessage string) {
 	var loggedMessage string
 	switch logType {
@@ -26,6 +41,10 @@ func Logs(logType int, logMessage string) {
 		loggedMessage = warn + logMessage
 	case 3:
 		loggedMessage = logErr + logMessage
+	case 4:
+		loggedMessage = db + logMessage
+	case 5:
+		loggedMessage = dbErr + logMessage
 	}
 	logChannel <- loggedMessage
 }

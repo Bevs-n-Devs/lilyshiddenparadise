@@ -15,14 +15,7 @@ func Tenancy(w http.ResponseWriter, r *http.Request) {
 	refusedRentError := r.URL.Query().Get("refusedRentError")
 	unstableIncomeError := r.URL.Query().Get("unstableIncomeError")
 
-	data := struct {
-		EvictedError        string
-		ConvictedError      string
-		VehicleError        string
-		ChildrenError       string
-		RefusedRentError    string
-		UnstableIncomeError string
-	}{
+	data := FormError{
 		EvictedError:        evictedError,
 		ConvictedError:      convictedError,
 		VehicleError:        vehicleError,
@@ -33,8 +26,8 @@ func Tenancy(w http.ResponseWriter, r *http.Request) {
 
 	err := Templates.ExecuteTemplate(w, "tenancy.html", data)
 	if err != nil {
-		logs.Logs(3, fmt.Sprintf("Unable to load tenancy page: %s", err))
-		http.Error(w, "Unable to load tenancy page: "+err.Error(), http.StatusInternalServerError)
+		logs.Logs(logErr, fmt.Sprintf("Unable to load tenancy page: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Unable to load tenancy page: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
 }

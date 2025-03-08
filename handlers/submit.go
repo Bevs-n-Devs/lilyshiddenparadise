@@ -9,7 +9,7 @@ import (
 
 func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		logs.Logs(3, fmt.Sprintf("Invalid request method: %s. Redirecting back to home page.", r.Method)) // this can be redirected back to the form page later on..
+		logs.Logs(logErr, fmt.Sprintf("Invalid request method: %s. Redirecting back to home page.", r.Method)) // this can be redirected back to the form page later on..
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -17,8 +17,8 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	// Parse form data - vaidate the data can be taken from the form
 	err := r.ParseForm()
 	if err != nil {
-		logs.Logs(3, fmt.Sprintf("Error parsing form data: %s", err.Error()))
-		http.Error(w, "Error parsing form data: "+err.Error(), http.StatusBadRequest)
+		logs.Logs(logErr, fmt.Sprintf("Error parsing form data: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Error parsing form data: %s", err.Error()), http.StatusBadRequest)
 		return
 	}
 
@@ -53,7 +53,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 		result := checkIfEvicted(ifEvicted, evictedReason)
 		// redirect to form page with error message
 		if !result {
-			logs.Logs(3, "Invalid form data: Evicted reason not given.")
+			logs.Logs(logErr, "Invalid form data: Evicted reason not given.")
 			http.Redirect(w, r, "/form?evictedError=Evicted+reason+not+given", http.StatusSeeOther)
 			return
 		}
@@ -62,7 +62,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	if ifConvicted == "yes" {
 		result := checkIfConvicted(ifConvicted, convictedReason)
 		if !result {
-			logs.Logs(3, "Invalid form data: Convicted reason not given.")
+			logs.Logs(logErr, "Invalid form data: Convicted reason not given.")
 			http.Redirect(w, r, "/form?convictedError=Conviction+information+not+given", http.StatusSeeOther)
 			return
 		}
@@ -71,7 +71,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	if ifVehicle == "yes" {
 		result := checkIfVehiclke(ifVehicle, vehicleReg)
 		if !result {
-			logs.Logs(3, "Invalid form data: Vehicle registration not given.")
+			logs.Logs(logErr, "Invalid form data: Vehicle registration not given.")
 			http.Redirect(w, r, "/form?vehicleError=Vehicle+registration+not+given", http.StatusSeeOther)
 			return
 		}
@@ -80,7 +80,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	if haveChildren == "yes" {
 		result := checkIfHaveChildren(haveChildren, children)
 		if !result {
-			logs.Logs(3, "Invalid form data: Children information not given.")
+			logs.Logs(logErr, "Invalid form data: Children information not given.")
 			http.Redirect(w, r, "/form?childrenError=Children+information+not+given", http.StatusSeeOther)
 			return
 		}
@@ -89,7 +89,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	if refusedRent == "yes" {
 		result := checkIfRefusedRent(refusedRent, refusedRentReason)
 		if !result {
-			logs.Logs(3, "Invalid form data: Refused rent reason not given.")
+			logs.Logs(logErr, "Invalid form data: Refused rent reason not given.")
 			http.Redirect(w, r, "/form?refusedRentError=Reason+for+refusing+rent+not+given", http.StatusSeeOther)
 			return
 		}
@@ -98,7 +98,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 	if unstableIncome == "yes" {
 		result := checkIfStableIncome(unstableIncome, incomeReason)
 		if !result {
-			logs.Logs(3, "Invalid form data: Income reason not given.")
+			logs.Logs(logErr, "Invalid form data: Income reason not given.")
 			http.Redirect(w, r, "/form?unstableIncomeError=Reasons+for+unstable+income+not+given", http.StatusSeeOther)
 			return
 		}
@@ -106,18 +106,21 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 
 	// log form data (save to databse later on)
 	logMessage := fmt.Sprintf("Form data - Full Name: %s, Date of Birth: %s, Passport Number: %s, Phone Number: %s, Email: %s, Occupation: %s, Employer: %s, Employee Number: %s, Emergency Contact Name: %s, Emergency Contact Number: %s, Emergency Contact Address: %s, If Evicted: %s, Evicted Reason: %s, If Convicted: %s, Convicted Reason: %s, Smoke: %s, Pets: %s, If Vehicle: %s, Vehicle Reg: %s, Have Children: %s, Children: %s, Refused Rent: %s, Refused Rent Reason: %s, Instabel Income: %s, Income Reason: %s", fullName, dateOfBirth, passportNumber, phoneNumber, email, occupation, employer, employeeNumber, emergencyContactName, emergencyContactNumber, emergencyContactAddress, ifEvicted, evictedReason, ifConvicted, convictedReason, smoke, pets, ifVehicle, vehicleReg, haveChildren, children, refusedRent, refusedRentReason, unstableIncome, incomeReason)
-	logs.Logs(1, logMessage)
+	logs.Logs(logInfo, logMessage)
 
 	// redirect to home page
-	logs.Logs(1, "Form data saved successfully. Redirecting to home page.")
+	logs.Logs(logInfo, "Form data saved successfully. Redirecting to home page.")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+// TODO! Move these functions to utils package
 
 /*
 Checks if ifEvicted is yes and evictedReason is empty;
 returns false if invalid.
+
+Returns true if ifEvicted is yes and evictedReason is not empty
 */
-// Returns true if ifEvicted is yes and evictedReason is not empty
 func checkIfEvicted(ifEvicted, evictedReason string) bool {
 	if ifEvicted == "yes" && evictedReason == "" {
 		return false
@@ -128,8 +131,9 @@ func checkIfEvicted(ifEvicted, evictedReason string) bool {
 /*
 Checks if ifConvicted is yes and convictedReason is empty;
 returns false if invalid.
+
+Returns true if ifConvicted is yes and convictedReason is not empty
 */
-// Returns true if ifConvicted is yes and convictedReason is not empty
 func checkIfConvicted(ifConvicted, convictedReason string) bool {
 	if ifConvicted == "yes" && convictedReason == "" {
 		return false
@@ -140,8 +144,9 @@ func checkIfConvicted(ifConvicted, convictedReason string) bool {
 /*
 Checks if ifVehicle is yes and vehicleReg is empty;
 returns false if invalid.
+
+Returns true if ifVehicle is yes and vehicleReg is not empty
 */
-// Returns true if ifVehicle is yes and vehicleReg is not empty
 func checkIfVehiclke(ifVehicle, vehicleReg string) bool {
 	if ifVehicle == "yes" && vehicleReg == "" {
 		return false
@@ -152,8 +157,9 @@ func checkIfVehiclke(ifVehicle, vehicleReg string) bool {
 /*
 Checks if haveChildren is yes and children is empty;
 returns false if invalid.
+
+Returns true if haveChildren is yes and children is not empty
 */
-// Returns true if haveChildren is yes and children is not empty
 func checkIfHaveChildren(haveChildren, children string) bool {
 	if haveChildren == "yes" && children == "" {
 		return false
@@ -164,8 +170,9 @@ func checkIfHaveChildren(haveChildren, children string) bool {
 /*
 Checks if refusedRent is yes and refusedRentReason is empty;
 returns false if invalid.
+
+Returns true if refusedRent is yes and refusedRentReason is not empty
 */
-// Returns true if refusedRent is yes and refusedRentReason is not empty
 func checkIfRefusedRent(refusedRent, refusedRentReason string) bool {
 	if refusedRent == "yes" && refusedRentReason == "" {
 		return false
@@ -176,8 +183,9 @@ func checkIfRefusedRent(refusedRent, refusedRentReason string) bool {
 /*
 Checks if unstableIncome is yes and incomeReason is empty;
 returns false if invalid.
+
+Returns true if stableIncome is no and incomeReason is not empty
 */
-// Returns true if stableIncome is no and incomeReason is not empty
 func checkIfStableIncome(unstableIncome, incomeReason string) bool {
 	if unstableIncome == "yes" && incomeReason == "" {
 		return false
