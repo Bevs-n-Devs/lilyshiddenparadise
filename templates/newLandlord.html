@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en-US"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en-US"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en">
+
+<head>
+
+    <!--meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--meta tags ends-->
+
+    <title>Create Landlord | Lilys Hidden Paradise</title>
+
+    <!--- Links to google fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,800%7cRoboto+Mono:400,700%7cMerriweather:300%7cAbril+Fatface'
+          rel='stylesheet'>
+    <!-- Links to fonts ends -->
+
+    <!-- Bootstrap stylesheet -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Icons -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+    <!-- Popup Images -->
+    <link rel="stylesheet" type="text/css" href="/static/css/magnific-popup.css">
+
+    <!-- css animation -->
+    <link rel="stylesheet" type="text/css" href="/static/css/animate.css">
+
+    <!-- custom stylesheets -->
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+  
+
+
+</head>
+
+<body>
+
+<!-- Start: Preloader section -->
+<div id="loader-wrapper">
+    <div id="loader"></div>
+</div>
+<!-- End: Preloader section -->
+
+<!-- DOCUMENT WRAPPER STARTS -->
+    <main>
+
+        <!-- MAIN HEADER STARTS-->
+            <header id="header">
+
+            <!-- TOP NAVIGATION -->
+            <nav class="top-navigation-bar navbar navbar-default navbar-fixed-top">
+                <div class="container">
+                <div class="row">
+                <div class="col-md-12">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" 
+                                data-toggle="collapse" data-target="#top-navigation-bar" 
+                                aria-expanded="false">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/">LHP</a>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="top-navigation-bar">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="active"><a href="/">Home</a></li>
+                            <li><a href="/tenancy-form">Tenancy</a></li>
+                            <li><a href="/login/tenant">Login</a></li>                            
+                        </ul>
+                    </div>
+                    <!-- /.navbar-collapse -->
+                    </div>
+                    </div>
+                </div>
+                <!-- /.container-->
+            </nav>
+            <!-- TOP NAVIGATION ENDS -->
+
+        </header>
+        
+        <!-- main header ends-->
+        <section id="address" class="address page-top">
+            <div class="container">
+                <div class="row">
+                    
+                        <div class="col-md-6">
+                        <div class="address-wrapper wow fadeInUp" data-wow-delay="0.3s">
+                        <h1>Our Address</h1>
+                        <table class="address-table">
+                                <tbody>
+                                    <tr>
+                                        <td>Location</td>
+                                        <td>Bournes Village, St George<br>Barbados</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Phone:</td>
+                                        <td>+2462302047</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Email:</td>
+                                        <td>foobar@email.com</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Instagram:</td>
+                                        <td>account.com/pages/foobar</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </div>
+                    </div>
+                    <div class="col-md-6">
+                    <div class="map-wrapper wow fadeInUp" data-wow-delay="0.6s">
+                        <div id="map"></div>                     
+                    </div>
+                    </div>
+                    
+                    
+            </div>
+            </div>
+        </section>
+
+        <section id="email-us" class="email-us page">
+            <div class="container wow fadeInUp" data-wow-delay="0.3s">
+                <div class="row">
+                    
+                    <div class="col-md-6">
+                    <div class="email-wrapper">
+                        <h1>Create New Landlord Account</h1>
+                        <div class="section-snippet hidden-xs">
+                          <span class="snippet-heading">Are you a landlord?</span>
+                          <span style="color: #FB0097;">Click <a href="/new/landlord" style="color:#14962c;">here</a> to create your account</span>  
+                        </div>
+
+                        <div class="section-snippet hidden-xs">
+                          <span class="snippet-heading">Already have a landlord account?</span>
+                          <span style="color: #FB0097;">Click <a href="/login/landlord" style="color:#14962c;">here</a> to login</span>  
+                        </div>
+
+                        <div class="section-snippet hidden-xs">
+                            <span class="snippet-heading">Don't have a tenant account?</span>
+                            <span style="color: #FB0097;">Complete your <a href="/tenancy-form" style="color:#14962c;">Tenancy Form</a> to obtain an account</span></span>
+                        </div>
+                     </div>  
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-wrapper">
+                          <form action="/new/landlord/submit" method="post">
+                              <label for="account">Enter Your Email To Create An Account:</label>
+                              <input type="email" name="landlordEmail" id="landlordEmail" placeholder="your email...">
+                              <label for="message">Create Your Account Password:</label>
+                              {{ if .ConfirmPasswordError }}
+                                <p style="color: red;">{{ .ConfirmPasswordError }}</p>
+                              {{ end }}
+                              <input type="password" name="landlordPassword" id="landlordPassword" placeholder="your password...">
+                              <label for="message">Confirm Your Account Password:</label>
+                              {{ if .ConfirmPasswordError }}
+                                <p style="color: red;">{{ .ConfirmPasswordError }}</p>
+                              {{ end }}
+                              <input type="password" name="confirmPassword" id="confirmPassword" placeholder="your password...">
+                              <input class="custom-button" type="submit" name="submit" value="Login">
+                          </form> 
+                    </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+
+         <!-- footer section starts -->
+        <footer id="footer" class="footer">
+            <div class="container wow fadeInUp">
+                <div class="row">
+                    <div class="footer-wrapper clearfix">
+                    <div class="col-md-6 footer-left">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="footer-link footer-link-1">
+                                    <h4>Create Free Account</h4>
+                                    <ul>
+                                        <li><a href="#">View courses</a></li>
+                                        <li><a href="#">Discuss</a></li>
+                                        <li><a href="#">Suggest course</a></li>
+                                        <li><a href="#">View courses</a></li>
+                                        <li><a href="#">Discuss</a></li>
+                                        <li><a href="#">Suggest course</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="footer-link footer-link-2">
+                                    <h4>Create Free Account</h4>
+                                    <ul>
+                                        <li><a href="#">View courses</a></li>
+                                        <li><a href="#">Discuss</a></li>
+                                        <li><a href="#">Suggest course</a></li>
+                                        <li><a href="#">View courses</a></li>
+                                        <li><a href="#">Discuss</a></li>
+                                        <li><a href="#">Suggest course</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5 col-md-offset-1 footer-text">
+                        <p>
+                            By submitting information through this platform, you acknowledge and agree that Akoto Tech 
+                            may securely store and utilize your data for educational, analytical, and promotional purposes, 
+                            as well as to enhance its services. Your data may also be used for internal evaluations, 
+                            aggregated research, or other purposes deemed appropriate by Akoto Tech.
+                        </p>
+                        <span>
+                            &copy; 2025 Created By 
+                            <a href="https://akototech.org" 
+                               target="_blank" 
+                               style="color: #FB0097;" 
+                               rel="noopener noreferrer">
+                                Akoto Tech
+                            </a>
+                        </span>
+                    </div>
+                    </div>
+                </div><!-- End: .row -->
+            </div><!-- End: .container-->
+        </footer>
+        <!-- footer section ends -->
+
+    </main>
+<!-- DOCUMENT WRAPPER ENDS -->
+
+
+
+<!-- SCRIPTS -->
+
+    <!-- jQuery (necessary for all the plugins) -->
+    <script src="/static/js/jquery-1.11.2.min.js"></script>
+
+    <script src="http://maps.google.com/maps/api/js"></script>
+    <script src="/static/js/gmaps.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.magnific-popup.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.easing.min.js"></script>
+    <script type="text/javascript" src="/static/js/wow.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.validate.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/main.js"></script>
+
+<!-- SCRIPTS ENDS -->
+</body>
+
+</html>

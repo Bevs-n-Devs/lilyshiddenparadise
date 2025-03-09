@@ -7,7 +7,8 @@ import (
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
 )
 
-func Tenancy(w http.ResponseWriter, r *http.Request) {
+func TenancyForm(w http.ResponseWriter, r *http.Request) {
+	// collect any error messages
 	evictedError := r.URL.Query().Get("evictedError")
 	convictedError := r.URL.Query().Get("convictedError")
 	vehicleError := r.URL.Query().Get("vehicleError")
@@ -15,14 +16,7 @@ func Tenancy(w http.ResponseWriter, r *http.Request) {
 	refusedRentError := r.URL.Query().Get("refusedRentError")
 	unstableIncomeError := r.URL.Query().Get("unstableIncomeError")
 
-	data := struct {
-		EvictedError        string
-		ConvictedError      string
-		VehicleError        string
-		ChildrenError       string
-		RefusedRentError    string
-		UnstableIncomeError string
-	}{
+	data := ErrorMessages{
 		EvictedError:        evictedError,
 		ConvictedError:      convictedError,
 		VehicleError:        vehicleError,
@@ -31,10 +25,11 @@ func Tenancy(w http.ResponseWriter, r *http.Request) {
 		UnstableIncomeError: unstableIncomeError,
 	}
 
-	err := Templates.ExecuteTemplate(w, "tenancy.html", data)
+	// pass error messages to HTML template
+	err := Templates.ExecuteTemplate(w, "tenancyForm.html", data)
 	if err != nil {
-		logs.Logs(3, fmt.Sprintf("Unable to load tenancy page: %s", err))
-		http.Error(w, "Unable to load tenancy page: "+err.Error(), http.StatusInternalServerError)
+		logs.Logs(logErr, fmt.Sprintf("Unable to load tenancy page: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Unable to load tenancy page: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
 }

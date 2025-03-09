@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--meta tags ends-->
 
-    <title>Lilys Hidden Paradise | Tenancy Form</title>
+    <title>Tenancy Form | Lilys Hidden Paradise</title>
 
     <!--- Links to google fonts -->
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,800%7cRoboto+Mono:400,700%7cMerriweather:300%7cAbril+Fatface'
@@ -74,8 +74,8 @@
                     <div class="collapse navbar-collapse" id="top-navigation-bar">
                         <ul class="nav navbar-nav navbar-right">
                             <li class="active"><a href="/">Home</a></li>
-                            <li><a href="/form">Tenancy</a></li>
-                            <li><a href="/login">Login</a></li>                            
+                            <li><a href="/tenancy-form">Tenancy</a></li>
+                            <li><a href="/login/tenant">Login</a></li>                            
                         </ul>
                     </div>
                     <!-- /.navbar-collapse -->
@@ -138,13 +138,13 @@
                         <h1>Tenancy Form</h1>
                         <div class="section-snippet hidden-xs">
                           <span class="snippet-heading">Prefer Printable Version?</span>
-                          <span style="color: #FB0097;">Click <a href="">here</a> to download the tenancy form which you can complete and hand back to us</span>  
+                          <span style="color: #FB0097;">Click <a href="/static/pdf/tenancy-application.pdf" style="color:#14962c;" download>here</a> to download the tenancy form which you can complete and hand back to us</span>  
                         </div>
                      </div>  
                     </div>
                     <div class="col-md-6">
                         <div class="form-wrapper">
-                          <form action="/submit" method="post">
+                          <form action="/tenancy-form/submit" method="post">
                               <label for="fullName">Full Name:</label>
                               <input type="text" name="fullName" id="name" placeholder="your full name..." required>
                               <label for="dob">Date of Birth:</label>
@@ -291,8 +291,21 @@
                         </div>
                     </div>
                     <div class="col-md-5 col-md-offset-1 footer-text">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip</p>
-                        <span>&copy; 2025 Created By <a href="https://akototech.org" target="_blank">Akoto Tech</a></span>
+                        <p>
+                            By submitting information through this platform, you acknowledge and agree that Akoto Tech 
+                            may securely store and utilize your data for educational, analytical, and promotional purposes, 
+                            as well as to enhance its services. Your data may also be used for internal evaluations, 
+                            aggregated research, or other purposes deemed appropriate by Akoto Tech.
+                        </p>
+                        <span>
+                            &copy; 2025 Created By 
+                            <a href="https://akototech.org" 
+                               target="_blank" 
+                               style="color: #FB0097;" 
+                               rel="noopener noreferrer">
+                                Akoto Tech
+                            </a>
+                        </span>
                     </div>
                     </div>
                 </div><!-- End: .row -->
