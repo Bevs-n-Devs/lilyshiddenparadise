@@ -8,7 +8,7 @@ import (
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
 )
 
-func SubmitForm(w http.ResponseWriter, r *http.Request) {
+func SubmitTenantForm(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		logs.Logs(logErr, fmt.Sprintf("Invalid request method: %s. Redirecting back to home page.", r.Method)) // this can be redirected back to the form page later on..
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -55,7 +55,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 		// redirect to form page with error message
 		if !result {
 			logs.Logs(logErr, "Invalid form data: Evicted reason not given.")
-			http.Redirect(w, r, "/form?evictedError=Evicted+reason+not+given", http.StatusSeeOther)
+			http.Redirect(w, r, "/tenancy-form?evictedError=Evicted+reason+not+given", http.StatusSeeOther)
 			return
 		}
 	}
@@ -64,7 +64,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 		result := utils.CheckIfConvicted(ifConvicted, convictedReason)
 		if !result {
 			logs.Logs(logErr, "Invalid form data: Convicted reason not given.")
-			http.Redirect(w, r, "/form?convictedError=Conviction+information+not+given", http.StatusSeeOther)
+			http.Redirect(w, r, "/tenancy-form?convictedError=Conviction+information+not+given", http.StatusSeeOther)
 			return
 		}
 	}
@@ -73,7 +73,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 		result := utils.CheckIfVehicle(ifVehicle, vehicleReg)
 		if !result {
 			logs.Logs(logErr, "Invalid form data: Vehicle registration not given.")
-			http.Redirect(w, r, "/form?vehicleError=Vehicle+registration+not+given", http.StatusSeeOther)
+			http.Redirect(w, r, "/tenancy-form?vehicleError=Vehicle+registration+not+given", http.StatusSeeOther)
 			return
 		}
 	}
@@ -82,7 +82,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 		result := utils.CheckIfHaveChildren(haveChildren, children)
 		if !result {
 			logs.Logs(logErr, "Invalid form data: Children information not given.")
-			http.Redirect(w, r, "/form?childrenError=Children+information+not+given", http.StatusSeeOther)
+			http.Redirect(w, r, "/tenancy-form?childrenError=Children+information+not+given", http.StatusSeeOther)
 			return
 		}
 	}
@@ -91,7 +91,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 		result := utils.CheckIfRefusedRent(refusedRent, refusedRentReason)
 		if !result {
 			logs.Logs(logErr, "Invalid form data: Refused rent reason not given.")
-			http.Redirect(w, r, "/form?refusedRentError=Reason+for+refusing+rent+not+given", http.StatusSeeOther)
+			http.Redirect(w, r, "/tenancy-form?refusedRentError=Reason+for+refusing+rent+not+given", http.StatusSeeOther)
 			return
 		}
 	}
@@ -100,7 +100,7 @@ func SubmitForm(w http.ResponseWriter, r *http.Request) {
 		result := utils.CheckIfStableIncome(unstableIncome, incomeReason)
 		if !result {
 			logs.Logs(logErr, "Invalid form data: Income reason not given.")
-			http.Redirect(w, r, "/form?unstableIncomeError=Reasons+for+unstable+income+not+given", http.StatusSeeOther)
+			http.Redirect(w, r, "/tenancy-form?unstableIncomeError=Reasons+for+unstable+income+not+given", http.StatusSeeOther)
 			return
 		}
 	}
