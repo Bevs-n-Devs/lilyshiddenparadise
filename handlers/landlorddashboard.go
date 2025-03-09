@@ -19,7 +19,7 @@ func LandlordDashboard(w http.ResponseWriter, r *http.Request) {
 	err := middleware.AuthenticateLandlordRequest(r)
 	if err != nil {
 		logs.Logs(logErr, fmt.Sprintf("Error authenticating landlord: %s. Redirecting to landlord login page", err.Error()))
-		http.Redirect(w, r, "/login/landlord?unauthorized=UNAUTHORIZED+401:+Error+authenticating+landlord", http.StatusUnauthorized)
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord", http.StatusSeeOther)
 		return
 	}
 

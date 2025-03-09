@@ -30,8 +30,8 @@ func SubmitLoginLandlord(w http.ResponseWriter, r *http.Request) {
 	// check if landlord exists in database
 	exists, err := db.AuthenticateLandlord(landlordEmail, landlordPassword)
 	if err != nil {
-		logs.Logs(logErr, fmt.Sprintf("Error authenticating landlord: %s", err.Error()))
-		http.Error(w, fmt.Sprintf("Error authenticating landlord: %s", err.Error()), http.StatusInternalServerError)
+		logs.Logs(logErr, fmt.Sprintf("Error authenticating landlord: %s. Redirecting back to landlord login page", err.Error()))
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord", http.StatusSeeOther)
 		return
 	}
 
@@ -51,20 +51,25 @@ func SubmitLoginLandlord(w http.ResponseWriter, r *http.Request) {
 
 	// set session cookie
 	http.SetCookie(w, &http.Cookie{
-		Name:     "landlord_session_token",
+		Name:     "session_token",
 		Value:    sessionToken,
 		Expires:  expiryTime,
+		Path:     "/landlord/dashboard",
 		HttpOnly: true,
 	})
 
 	// set csrf cookie
 	http.SetCookie(w, &http.Cookie{
-		Name:     "landlord_csrf_token",
+		Name:     "csrf_token",
 		Value:    csrfToken,
 		Expires:  expiryTime,
+		Path:     "/landlord/dashboard",
 		HttpOnly: false,
 	})
 
+	// Add a logging statement here to see if the session token is being overwritten
+	logs.Logs(logInfo, fmt.Sprintf("Session token before redirect: %s", sessionToken))
+
 	// redirect to landlord dashboard if authentication is successful
-	http.Redirect(w, r, "/landlord/dahboard", http.StatusSeeOther)
+	http.Redirect(w, r, "/landlord/dashboard", http.StatusSeeOther)
 }

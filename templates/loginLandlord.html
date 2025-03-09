@@ -157,9 +157,15 @@
                           <form action="/login/landlord/submit" method="post">
                               {{ if .BadRequestError }}
                                   <label for="badRequestError" style="color: red;">{{ .BadRequestError }}</label>
+                                  <p style="color: red;">Failed to login to landlord account. Please try again.</p>
                               {{ end }}
                               {{ if .NotFoundError }}
-                                  <label for="notFoundError" style="color: red;">{{ .NotFoundError }}"></label>
+                                  <label for="notFoundError" style="color: red;">{{ .NotFoundError }}</label>
+                                  <p style="color: red;">Landlord account not found. Are you sure you have an account?</p>
+                              {{ end }}
+                              {{ if .AuthenticationError }}
+                                  <label for="authenticationError" style="color: red;">{{ .AuthenticationError }}</label>
+                                  <p style="color: red;">Failed to login to landlord account. Please try again.</p>
                               {{ end }}
                               <label for="account">Account:</label>
                               <input type="email" name="landlordEmail" id="landlordEmail" placeholder="your email address...">
