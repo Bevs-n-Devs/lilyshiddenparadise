@@ -54,8 +54,9 @@ func SubmitLoginLandlord(w http.ResponseWriter, r *http.Request) {
 		Name:     "session_token",
 		Value:    sessionToken,
 		Expires:  expiryTime,
-		Path:     "/landlord/dashboard",
 		HttpOnly: true,
+		Path:     "/landlord/dashboard",
+		SameSite: http.SameSiteStrictMode,
 	})
 
 	// set csrf cookie
@@ -63,12 +64,10 @@ func SubmitLoginLandlord(w http.ResponseWriter, r *http.Request) {
 		Name:     "csrf_token",
 		Value:    csrfToken,
 		Expires:  expiryTime,
-		Path:     "/landlord/dashboard",
 		HttpOnly: false,
+		Path:     "/landlord/dashboard",
+		SameSite: http.SameSiteStrictMode,
 	})
-
-	// Add a logging statement here to see if the session token is being overwritten
-	logs.Logs(logInfo, fmt.Sprintf("Session token before redirect: %s", sessionToken))
 
 	// redirect to landlord dashboard if authentication is successful
 	http.Redirect(w, r, "/landlord/dashboard", http.StatusSeeOther)

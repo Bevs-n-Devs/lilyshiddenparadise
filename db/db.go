@@ -322,3 +322,21 @@ func ValidateLandlordCSRFToken(email, csrfToken string) (bool, error) {
 	}
 	return true, nil
 }
+
+func LogoutLandlord(email string) error {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return errors.New("database connection is not initialized")
+	}
+
+	query := `
+	UPDATE lhp_landlords 
+	SET session_token=NULL, csrf_token=NULL, token_expiry=NULL 
+	WHERE email=$1;
+	`
+	_, err := db.Exec(query, email)
+	if err != nil {
+		return err
+	}
+	return nil
+}

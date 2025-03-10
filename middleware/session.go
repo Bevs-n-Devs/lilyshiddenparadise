@@ -33,12 +33,9 @@ func AuthenticateLandlordRequest(r *http.Request) error {
 	// get the session token from the cookie
 	sessionToken, err := r.Cookie("session_token")
 	if err != nil || sessionToken.Value == "" {
-		logs.Logs(logInfo, fmt.Sprintf("Session token: %s", sessionToken))
 		logs.Logs(logErr, fmt.Sprintf("Failed to get session token: %s", err.Error()))
 		return fmt.Errorf("%s! Session token is missing", ErrAuth)
 	}
-
-	logs.Logs(logInfo, fmt.Sprintf("Session token: %s", sessionToken.Value))
 
 	email, err := db.GetEmailFromLandlordSessionToken(sessionToken.Value)
 	if err != nil {
@@ -60,7 +57,7 @@ func AuthenticateLandlordRequest(r *http.Request) error {
 
 	// get csrf token from the cookie
 	csrfToken, err := r.Cookie("csrf_token")
-	if err != nil {
+	if err != nil || csrfToken.Value == "" {
 		logs.Logs(logErr, fmt.Sprintf("Failed to get CSRF token: %s", err.Error()))
 		return fmt.Errorf("%s! Failed to get CSRF token", ErrAuth)
 	}
