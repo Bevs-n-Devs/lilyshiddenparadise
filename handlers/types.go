@@ -21,6 +21,8 @@ type ErrorMessages struct {
 	BadRequestError     string
 	NotFoundError       string
 	AuthenticationError string
+	InternalServerError string
+	CookieError         string
 	// Tenancy form error messages
 	EvictedError         string
 	ConvictedError       string

@@ -3,10 +3,10 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/db"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
+	"github.com/Bevs-n-Devs/lilyshiddenparadise/middleware"
 )
 
 func LogoutLandlord(w http.ResponseWriter, r *http.Request) {
@@ -31,23 +31,18 @@ func LogoutLandlord(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// delete the session token, CSRF token and expiry time from the cookie
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session_token",
-		Value:    "",
-		Expires:  time.Now().Add(-time.Hour),
-		HttpOnly: true,
-		Path:     "/",
-		SameSite: http.SameSiteStrictMode,
-	})
-
-	http.SetCookie(w, &http.Cookie{
-		Name:     "csrf_token",
-		Value:    "",
-		Expires:  time.Now().Add(-time.Hour),
-		HttpOnly: false,
-		Path:     "/",
-		SameSite: http.SameSiteStrictMode,
-	})
+	deleteSessionCookie := middleware.DeleteLandlordSessionCookie(w)
+	if !deleteSessionCookie {
+		logs.Logs(logWarn, "Failed to delete session token cookie. Redirecting to home page")
+		http.Redirect(w, r, "/?cookieError=COOKIE+ERROR+500:+Failed+to+delete+session+token+cookie", http.StatusSeeOther)
+		return
+	}
+	deleteCSRFCookie := middleware.DeleteLandlordCSRFCookie(w)
+	if !deleteCSRFCookie {
+		logs.Logs(logWarn, "Failed to delete CSRF token cookie. Redirecting to home page")
+		http.Redirect(w, r, "/?cookieError=COOKIE+ERROR+500:+Failed+to+delete+CSRF+token+cookie", http.StatusSeeOther)
+		return
+	}
 
 	logs.Logs(logInfo, "Landlord logged out successfully")
 	http.Redirect(w, r, "/", http.StatusSeeOther)

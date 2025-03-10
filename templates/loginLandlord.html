@@ -167,6 +167,9 @@
                                   <label for="authenticationError" style="color: red;">{{ .AuthenticationError }}</label>
                                   <p style="color: red;">Failed to login to landlord account. Please try again.</p>
                               {{ end }}
+                              {{ if .InternalServerError }}
+                                  <label for="internalServerError" style="color: red;">{{ .InternalServerError }}</label>
+                              {{ end }}
                               <label for="account">Account:</label>
                               <input type="email" name="landlordEmail" id="landlordEmail" placeholder="your email address...">
                               <label for="message">Your Password:</label>
