@@ -6,6 +6,7 @@ import (
 
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/middleware"
+	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
 )
 
 func LandlordDashboard(w http.ResponseWriter, r *http.Request) {
@@ -19,7 +20,33 @@ func LandlordDashboard(w http.ResponseWriter, r *http.Request) {
 	err := middleware.AuthenticateLandlordRequest(r)
 	if err != nil {
 		logs.Logs(logErr, fmt.Sprintf("Error authenticating landlord: %s. Redirecting to landlord login page", err.Error()))
-		http.Redirect(w, r, "/login/landlord?unauthorized=UNAUTHORIZED+401:+Error+authenticating+landlord", http.StatusUnauthorized)
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord", http.StatusSeeOther)
+		return
+	}
+
+	// set cookie to logout landlord
+	sessionToken, err := utils.CheckSessionToken(r)
+	if err != nil {
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+session+token", http.StatusSeeOther)
+		return
+	}
+
+	csrfToken, err := utils.CheckCSRFToken(r)
+	if err != nil {
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+CSRF+token", http.StatusSeeOther)
+		return
+	}
+
+	createSessionCookie := middleware.LogoutLandlordSessionCookie(w, sessionToken)
+	if !createSessionCookie {
+		logs.Logs(logErr, "Failed to create session cookie for landlord. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+session+cookie", http.StatusSeeOther)
+		return
+	}
+	createCSRFTokenCookie := middleware.LogoutLandlordCSRFTokenCookie(w, csrfToken)
+	if !createCSRFTokenCookie {
+		logs.Logs(logErr, "Failed to create CSRF token cookie for landlord. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+CSRF+token+cookie", http.StatusSeeOther)
 		return
 	}
 

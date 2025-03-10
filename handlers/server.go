@@ -29,6 +29,7 @@ func StartHTTPServer() {
 	// http.HandleFunc("/login/tenant/submit", SubmitLoginTenant)
 
 	// protected routes
+	http.HandleFunc("/logout-landlord", LogoutLandlord)
 	http.HandleFunc("/landlord/dashboard", LandlordDashboard)
 	// http.HandleFunc("/tenant/dashboard", TenantDashboard)
 

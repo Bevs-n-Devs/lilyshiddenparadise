@@ -11,10 +11,14 @@ func LoginLandlord(w http.ResponseWriter, r *http.Request) {
 	// get any error messages
 	badRequestError := r.URL.Query().Get("badRequest")
 	notFoundError := r.URL.Query().Get("notFound")
+	authenticationError := r.URL.Query().Get("authenticationError")
+	internalServerError := r.URL.Query().Get("internalServerError")
 
 	data := ErrorMessages{
-		BadRequestError: badRequestError,
-		NotFoundError:   notFoundError,
+		BadRequestError:     badRequestError,
+		NotFoundError:       notFoundError,
+		AuthenticationError: authenticationError,
+		InternalServerError: internalServerError,
 	}
 
 	err := Templates.ExecuteTemplate(w, "loginLandlord.html", data)
