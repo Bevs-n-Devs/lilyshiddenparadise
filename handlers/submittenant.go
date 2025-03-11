@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Bevs-n-Devs/lilyshiddenparadise/db"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
 )
@@ -31,7 +32,7 @@ func SubmitTenantForm(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	occupation := r.FormValue("occupation")
 	employer := r.FormValue("employedBy")
-	employeeNumber := r.FormValue("workNumber")
+	employerNumber := r.FormValue("workNumber")
 	emergencyContactName := r.FormValue("emergencyName")
 	emergencyContactNumber := r.FormValue("emergencyNumber")
 	emergencyContactAddress := r.FormValue("emergencyAddress")
@@ -49,6 +50,13 @@ func SubmitTenantForm(w http.ResponseWriter, r *http.Request) {
 	refusedRentReason := r.FormValue("refusedRentReason")
 	unstableIncome := r.FormValue("unstableIncome")
 	incomeReason := r.FormValue("incomeReason")
+
+	// validate the user age - check if over 18
+	if !utils.ValidateAge(dateOfBirth) {
+		logs.Logs(logErr, "Invalid form data: User is not 18 years or older.")
+		http.Redirect(w, r, "/tenancy-form?ageError=User+is+not+18+years+or+older", http.StatusSeeOther)
+		return
+	}
 
 	if ifEvicted == "yes" {
 		result := utils.CheckIfEvicted(ifEvicted, evictedReason)
@@ -105,9 +113,43 @@ func SubmitTenantForm(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// log form data (save to databse later on)
-	logMessage := fmt.Sprintf("Form data - Full Name: %s, Date of Birth: %s, Passport Number: %s, Phone Number: %s, Email: %s, Occupation: %s, Employer: %s, Employee Number: %s, Emergency Contact Name: %s, Emergency Contact Number: %s, Emergency Contact Address: %s, If Evicted: %s, Evicted Reason: %s, If Convicted: %s, Convicted Reason: %s, Smoke: %s, Pets: %s, If Vehicle: %s, Vehicle Reg: %s, Have Children: %s, Children: %s, Refused Rent: %s, Refused Rent Reason: %s, Instabel Income: %s, Income Reason: %s", fullName, dateOfBirth, passportNumber, phoneNumber, email, occupation, employer, employeeNumber, emergencyContactName, emergencyContactNumber, emergencyContactAddress, ifEvicted, evictedReason, ifConvicted, convictedReason, smoke, pets, ifVehicle, vehicleReg, haveChildren, children, refusedRent, refusedRentReason, unstableIncome, incomeReason)
-	logs.Logs(logInfo, logMessage)
+	// save form data to database
+	err = db.SaveTenantApplicationForm(
+		fullName,
+		dateOfBirth,
+		passportNumber,
+		phoneNumber,
+		email,
+		occupation,
+		employer,
+		employerNumber,
+		emergencyContactName,
+		emergencyContactNumber,
+		emergencyContactAddress,
+		ifEvicted,
+		evictedReason,
+		ifConvicted,
+		convictedReason,
+		smoke,
+		pets,
+		ifVehicle,
+		vehicleReg,
+		haveChildren,
+		children,
+		refusedRent,
+		refusedRentReason,
+		unstableIncome,
+		incomeReason,
+	)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Error saving form data to database: %s. Redirecting back to tenancy form page.", err.Error()))
+		http.Redirect(w, r, "/tenancy-form?dbError=Error+saving+form+data+to+database", http.StatusSeeOther)
+		return
+	}
+
+	// TODO: send email to landlord about application - note to go check dashboard
+
+	// TODO: send email to tenant about application - note that application is being processed.
 
 	// redirect to home page
 	logs.Logs(logInfo, "Form data saved successfully. Redirecting to home page.")

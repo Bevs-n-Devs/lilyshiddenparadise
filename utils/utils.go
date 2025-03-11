@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
 	"golang.org/x/crypto/bcrypt"
@@ -320,4 +321,24 @@ func CheckCSRFToken(r *http.Request) (*http.Cookie, error) {
 		return nil, fmt.Errorf("user not authenticated! failed to get csrf token: %s", err.Error())
 	}
 	return csrfToken, nil
+}
+
+/*
+Checks if the age of the user is 18 years or older.
+
+Arguments:
+
+- dateOfBirth: A string representation of the date of birth of the user.
+
+Returns:
+
+- bool: True if the user is 18 years or older, false if not.
+*/
+func ValidateAge(dateOfBirth string) bool {
+	layout := "2006-01-02"
+	dob, err := time.Parse(layout, dateOfBirth)
+	if err != nil {
+		return false
+	}
+	return dob.Before(time.Now().Local().AddDate(-18, 0, 0))
 }

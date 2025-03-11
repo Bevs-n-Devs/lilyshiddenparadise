@@ -51,16 +51,16 @@ func SubmitLoginLandlord(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// set session cookie
-	createSessionCookie := middleware.LandlordDashboardSessionCookie(w, sessionToken, expiryTime)
-	if !createSessionCookie {
+	createLandlordDashboardSessionCookie := middleware.LandlordDashboardSessionCookie(w, sessionToken, expiryTime)
+	if !createLandlordDashboardSessionCookie {
 		logs.Logs(logErr, "Failed to create session cookie. Redirecting back to landlord login page...")
 		http.Redirect(w, r, "/login/landlord?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+session+cookie", http.StatusInternalServerError)
 		return
 	}
 
 	// set csrf cookie
-	createCSRFCookie := middleware.LandlordDashboardCSRFTokenCookie(w, csrfToken, expiryTime)
-	if !createCSRFCookie {
+	createLandlordDashboardCSRFCookie := middleware.LandlordDashboardCSRFTokenCookie(w, csrfToken, expiryTime)
+	if !createLandlordDashboardCSRFCookie {
 		logs.Logs(logErr, "Failed to create CSRF cookie. Redirecting back to landlord login page...")
 		http.Redirect(w, r, "/login/landlord?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+CSRF+cookie", http.StatusInternalServerError)
 		return
