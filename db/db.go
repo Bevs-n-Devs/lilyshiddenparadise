@@ -174,7 +174,7 @@ func UpdateLandlordSessionTokens(email string) (string, string, time.Time, error
 		logs.Logs(logDbErr, fmt.Sprintf("Failed to generate CSRF token: %s", err.Error()))
 		return "", "", time.Time{}, err
 	}
-	expiry := time.Now().Add(5 * time.Minute) // 5 minute validity
+	expiry := time.Now().Add(30 * time.Second) // 30 seconds validity
 
 	query := `
 	UPDATE lhp_landlords 

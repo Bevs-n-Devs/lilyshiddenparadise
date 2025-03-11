@@ -63,7 +63,7 @@ func LandlordDashboardCSRFTokenCookie(w http.ResponseWriter, csrfToken string, e
 
 /*
 LandlordDashboardTenantsSessionCookie sets a cookie on the response with the session token, expiry time, and path set to /landlord/dashboard/tenants.
-This is used to authenticate the landlord on the tenants dashboard page.
+This is used to authenticate the landlord on the landlord tenants page.
 
 Parameters:
 
@@ -75,13 +75,13 @@ Parameters:
 
 Returns:
 
-- bool: True if the cookie is set successfully.
+- bool: True if the cookie is set successfully, false otherwise.
 */
-func LandlordDashboardTenantsSessionCookie(w http.ResponseWriter, sessionToken *http.Cookie) bool {
+func LandlordDashboardTenantsSessionCookie(w http.ResponseWriter, sessionToken string, expiryTime time.Time) bool {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
-		Value:    sessionToken.Value,
-		Expires:  sessionToken.Expires.Add(5 * time.Minute),
+		Value:    sessionToken,
+		Expires:  expiryTime,
 		HttpOnly: true,
 		Path:     "/landlord/dashboard/tenants",
 		SameSite: http.SameSiteStrictMode,
@@ -105,11 +105,11 @@ Returns:
 
 - bool: True if the cookie is set successfully, false otherwise.
 */
-func LandlordDashboardTenantsCSRFTokenCookie(w http.ResponseWriter, csrfToken *http.Cookie) bool {
+func LandlordDashboardTenantsCSRFTokenCookie(w http.ResponseWriter, csrfToken string, expiryTime time.Time) bool {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "csrf_token",
-		Value:    csrfToken.Value,
-		Expires:  csrfToken.Expires.Add(5 * time.Minute),
+		Value:    csrfToken,
+		Expires:  expiryTime,
 		HttpOnly: false,
 		Path:     "/landlord/dashboard/tenants",
 		SameSite: http.SameSiteStrictMode,
@@ -117,11 +117,27 @@ func LandlordDashboardTenantsCSRFTokenCookie(w http.ResponseWriter, csrfToken *h
 	return true
 }
 
-func LandlordDashboardTenantApplicationsSessionCookie(w http.ResponseWriter, sessionToken *http.Cookie) bool {
+/*
+LandlordDashboardTenantApplicationsSessionCookie sets a cookie on the response with the session token, expiry time, and path set to /landlord/dashboard/tenant-applications.
+This is used to authenticate the landlord on the tenant applications page.
+
+Parameters:
+
+- w: The http.ResponseWriter to set the cookie on.
+
+- sessionToken: The session token to set in the cookie.
+
+- expiryTime: The expiry time of the cookie.
+
+Returns:
+
+- bool: True if the cookie is set successfully, false otherwise.
+*/
+func LandlordDashboardTenantApplicationsSessionCookie(w http.ResponseWriter, sessionToken string, expiryTime time.Time) bool {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
-		Value:    sessionToken.Value,
-		Expires:  sessionToken.Expires.Add(5 * time.Minute),
+		Value:    sessionToken,
+		Expires:  expiryTime,
 		HttpOnly: true,
 		Path:     "/landlord/dashboard/tenant-applications",
 		SameSite: http.SameSiteStrictMode,
@@ -129,11 +145,27 @@ func LandlordDashboardTenantApplicationsSessionCookie(w http.ResponseWriter, ses
 	return true
 }
 
-func LandlordDashboardTenantApplicationsCSRFTokenCookie(w http.ResponseWriter, csrfToken *http.Cookie) bool {
+/*
+LandlordDashboardTenantApplicationsCSRFTokenCookie sets a cookie on the response with the CSRF token, expiry time, and path set to /landlord/dashboard/tenant-applications.
+This is used to verify the authenticity of the requests to the landlord tenant applications page.
+
+Parameters:
+
+- w: The http.ResponseWriter to set the cookie on.
+
+- csrfToken: The CSRF token to set in the cookie.
+
+- expiryTime: The expiry time of the cookie.
+
+Returns:
+
+- bool: True if the cookie is set successfully, false otherwise.
+*/
+func LandlordDashboardTenantApplicationsCSRFTokenCookie(w http.ResponseWriter, csrfToken string, expiryTime time.Time) bool {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "csrf_token",
-		Value:    csrfToken.Value,
-		Expires:  csrfToken.Expires.Add(5 * time.Minute),
+		Value:    csrfToken,
+		Expires:  expiryTime,
 		HttpOnly: false,
 		Path:     "/landlord/dashboard/tenant-applications",
 		SameSite: http.SameSiteStrictMode,
@@ -155,10 +187,10 @@ Returns:
 
 - bool: True if the cookie is set successfully.
 */
-func LogoutLandlordSessionCookie(w http.ResponseWriter, sessionToken *http.Cookie) bool {
+func LogoutLandlordSessionCookie(w http.ResponseWriter, sessionToken string) bool {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
-		Value:    sessionToken.Value,
+		Value:    sessionToken,
 		HttpOnly: true,
 		Path:     "/logout-landlord",
 		SameSite: http.SameSiteStrictMode,
@@ -180,10 +212,10 @@ Returns:
 
 - bool: True if the cookie is set successfully.
 */
-func LogoutLandlordCSRFTokenCookie(w http.ResponseWriter, csrfToken *http.Cookie) bool {
+func LogoutLandlordCSRFTokenCookie(w http.ResponseWriter, csrfToken string) bool {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "csrf_token",
-		Value:    csrfToken.Value,
+		Value:    csrfToken,
 		HttpOnly: false,
 		Path:     "/logout-landlord",
 		SameSite: http.SameSiteStrictMode,
