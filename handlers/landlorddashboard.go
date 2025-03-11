@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Bevs-n-Devs/lilyshiddenparadise/db"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/middleware"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
@@ -24,42 +25,67 @@ func LandlordDashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// set cookie to logout landlord
+	// get session cookie
 	sessionToken, err := utils.CheckSessionToken(r)
 	if err != nil {
 		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+session+token", http.StatusSeeOther)
 		return
 	}
 
-	csrfToken, err := utils.CheckCSRFToken(r)
+	// get landlord emial from session cookie
+	landlordEmail, err := db.GetEmailFromLandlordSessionToken(sessionToken.Value)
 	if err != nil {
-		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+CSRF+token", http.StatusSeeOther)
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+landlord+email+from+session+token", http.StatusSeeOther)
+		return
+	}
+
+	// update the landlord's session token, CSRF token and expiry time in the database
+	// this will be doen for each request
+	newSessionToken, newCsrfToken, newExpiryTime, err := db.UpdateLandlordSessionTokens(landlordEmail)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Error updating landlord session tokens: %s. Redirecting to landlord login page", err.Error()))
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+update+session+tokens", http.StatusSeeOther)
+		return
+	}
+
+	// TODO! Set cookies for each avaialbe page via landlord dashboard page
+
+	// set new cookies for landlord dashboard - if user clicks on dashboard link while still on landlord dashboard
+	createLandlordDashboardSessionCookie := middleware.LandlordDashboardSessionCookie(w, newSessionToken, newExpiryTime)
+	if !createLandlordDashboardSessionCookie {
+		logs.Logs(logErr, "Failed to get session cookie for landlord dashboard. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+session+cookie", http.StatusSeeOther)
+		return
+	}
+	createLandordDashboardCSRFTokenCookie := middleware.LandlordDashboardCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
+	if !createLandordDashboardCSRFTokenCookie {
+		logs.Logs(logErr, "Failed to get CSRF token cookie for landlord dashboard. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+CSRF+token+cookie", http.StatusSeeOther)
 		return
 	}
 
 	// set cookies to landlord dashboard tenants page
-	createLandlordDashboardTenantSessionCookie := middleware.LandlordDashboardTenantsSessionCookie(w, sessionToken)
+	createLandlordDashboardTenantSessionCookie := middleware.LandlordDashboardTenantsSessionCookie(w, newSessionToken, newExpiryTime)
 	if !createLandlordDashboardTenantSessionCookie {
 		logs.Logs(logErr, "Failed to create session for the landlord tenants dashboard page. Redirecting back to login page")
 		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+session+cookie", http.StatusSeeOther)
 		return
 	}
-
-	createLandlordDashboardTenantCSRFTokenCookie := middleware.LandlordDashboardTenantsCSRFTokenCookie(w, csrfToken)
+	createLandlordDashboardTenantCSRFTokenCookie := middleware.LandlordDashboardTenantsCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
 	if !createLandlordDashboardTenantCSRFTokenCookie {
 		logs.Logs(logErr, "Failed to create CSRF token for the landlord tenants dashboard page. Redirecting back to login page")
 		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+CSRF+token+cookie", http.StatusSeeOther)
 	}
 
 	// set cookies to logout
-	createSessionCookie := middleware.LogoutLandlordSessionCookie(w, sessionToken)
-	if !createSessionCookie {
+	logoutSessionCookie := middleware.LogoutLandlordSessionCookie(w, newSessionToken)
+	if !logoutSessionCookie {
 		logs.Logs(logErr, "Failed to create session cookie for landlord. Redirecting to landlord login page")
 		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+session+cookie", http.StatusSeeOther)
 		return
 	}
-	createCSRFTokenCookie := middleware.LogoutLandlordCSRFTokenCookie(w, csrfToken)
-	if !createCSRFTokenCookie {
+	logoutCSRFTokenCookie := middleware.LogoutLandlordCSRFTokenCookie(w, newCsrfToken)
+	if !logoutCSRFTokenCookie {
 		logs.Logs(logErr, "Failed to create CSRF token cookie for landlord. Redirecting to landlord login page")
 		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+CSRF+token+cookie", http.StatusSeeOther)
 		return

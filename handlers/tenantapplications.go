@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Bevs-n-Devs/lilyshiddenparadise/db"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/middleware"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
@@ -24,31 +25,93 @@ func LandlordTenantApplications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// get session & CSRF cookies
+	// get session cookie
 	sessionToken, err := utils.CheckSessionToken(r)
 	if err != nil {
 		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+session+token", http.StatusSeeOther)
 		return
 	}
 
-	csrfToken, err := utils.CheckCSRFToken(r)
+	// get landlord emial from session cookie
+	landlordEmail, err := db.GetEmailFromLandlordSessionToken(sessionToken.Value)
 	if err != nil {
-		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+CSRF+token", http.StatusSeeOther)
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+landlord+email+from+session+token", http.StatusSeeOther)
 		return
 	}
 
-	// set cookies to logout
-	createSessionCookie := middleware.LogoutLandlordSessionCookie(w, sessionToken)
-	if !createSessionCookie {
+	// update the landlord's session token, CSRF token and expiry time in the database
+	// this will be doen for each request
+	newSessionToken, newCsrfToken, newExpiryTime, err := db.UpdateLandlordSessionTokens(landlordEmail)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Error updating landlord session tokens: %s. Redirecting to landlord login page", err.Error()))
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+update+session+tokens", http.StatusSeeOther)
+		return
+	}
+
+	// TODO! Set new cookies for each available page via tenant applications page
+
+	// set new cookies for landlord dashboard
+	createLandlordDashboardSessionCookie := middleware.LandlordDashboardSessionCookie(w, newSessionToken, newExpiryTime)
+	if !createLandlordDashboardSessionCookie {
+		logs.Logs(logErr, "Failed to get session cookie for landlord dashboard. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+session+cookie", http.StatusSeeOther)
+		return
+	}
+	createLandordDashboardCSRFTokenCookie := middleware.LandlordDashboardCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
+	if !createLandordDashboardCSRFTokenCookie {
+		logs.Logs(logErr, "Failed to get CSRF token cookie for landlord dashboard. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+CSRF+token+cookie", http.StatusSeeOther)
+		return
+	}
+
+	// set cookie to logout landlord
+	logoutSessionCookie := middleware.LogoutLandlordSessionCookie(w, newSessionToken)
+	if !logoutSessionCookie {
 		logs.Logs(logErr, "Failed to create session cookie for landlord. Redirecting to landlord login page")
 		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+session+cookie", http.StatusSeeOther)
 		return
 	}
-	createCSRFTokenCookie := middleware.LogoutLandlordCSRFTokenCookie(w, csrfToken)
-	if !createCSRFTokenCookie {
+	logoutCSRFTokenCookie := middleware.LogoutLandlordCSRFTokenCookie(w, newCsrfToken)
+	if !logoutCSRFTokenCookie {
 		logs.Logs(logErr, "Failed to create CSRF token cookie for landlord. Redirecting to landlord login page")
 		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+CSRF+token+cookie", http.StatusSeeOther)
 		return
+	}
+
+	// get tenant applications from database
+	getTenantApplications, err := db.GetAllTenantApplications()
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to get tenant applications: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to get tenant applications: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	showTenantApplications := []ShowLandlordApplications{}
+
+	// loop through tenant applications and decrypt data
+	logs.Logs(logInfo, "Decrypting tenant applications...")
+	for index := range getTenantApplications {
+		var convertedData ShowLandlordApplications
+		convertedData.Status = getTenantApplications[index].Status
+
+		getTenantApplications[index].FullName, err = utils.Decrypt(getTenantApplications[index].FullName)
+		if err != nil {
+			logs.Logs(logErr, fmt.Sprintf("Failed to decrypt tenant application full name: %s", err.Error()))
+			http.Error(w, fmt.Sprintf("Failed to decrypt tenant application full name: %s", err.Error()), http.StatusInternalServerError)
+			return
+		}
+		convertedData.FullName = string(getTenantApplications[index].FullName)
+
+		getTenantApplications[index].Dob, err = utils.Decrypt(getTenantApplications[index].Dob)
+		if err != nil {
+			logs.Logs(logErr, fmt.Sprintf("Failed to decrypt tenant application date of birth: %s", err.Error()))
+			http.Error(w, fmt.Sprintf("Failed to decrypt tenant application date of birth: %s", err.Error()), http.StatusInternalServerError)
+			return
+		}
+		convertedData.Dob = string(getTenantApplications[index].Dob)
+
+		// append data to showTenanryApplications slice
+		showTenantApplications = append(showTenantApplications, convertedData)
 	}
 
 	// direct user to protected tenant applications
