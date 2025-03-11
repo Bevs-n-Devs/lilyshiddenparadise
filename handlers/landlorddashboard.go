@@ -37,6 +37,21 @@ func LandlordDashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// set cookies to landlord dashboard tenants page
+	createLandlordDashboardTenantSessionCookie := middleware.LandlordDashboardTenantsSessionCookie(w, sessionToken)
+	if !createLandlordDashboardTenantSessionCookie {
+		logs.Logs(logErr, "Failed to create session for the landlord tenants dashboard page. Redirecting back to login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+session+cookie", http.StatusSeeOther)
+		return
+	}
+
+	createLandlordDashboardTenantCSRFTokenCookie := middleware.LandlordDashboardTenantsCSRFTokenCookie(w, csrfToken)
+	if !createLandlordDashboardTenantCSRFTokenCookie {
+		logs.Logs(logErr, "Failed to create CSRF token for the landlord tenants dashboard page. Redirecting back to login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+CSRF+token+cookie", http.StatusSeeOther)
+	}
+
+	// set cookies to logout
 	createSessionCookie := middleware.LogoutLandlordSessionCookie(w, sessionToken)
 	if !createSessionCookie {
 		logs.Logs(logErr, "Failed to create session cookie for landlord. Redirecting to landlord login page")

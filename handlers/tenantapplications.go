@@ -9,7 +9,7 @@ import (
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
 )
 
-func LandlordDashboardTenants(w http.ResponseWriter, r *http.Request) {
+func LandlordTenantApplications(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		logs.Logs(logErr, fmt.Sprintf("Invalid request method: %s. Redirecting back to landlord login page.", r.Method))
 		http.Redirect(w, r, "/login/landlord?badRequest=BAD+REQUEST+400:+Invalid+request+method", http.StatusBadRequest)
@@ -37,22 +37,7 @@ func LandlordDashboardTenants(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// set cookies to tenant applications
-	createLandlordTenantApplicationsSessionCookie := middleware.LandlordDashboardTenantApplicationsSessionCookie(w, sessionToken)
-	if !createLandlordTenantApplicationsSessionCookie {
-		logs.Logs(logErr, "Failed to get session cookie for landlord tenant applications. Redirecting to landlord login page")
-		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+session+cookie", http.StatusSeeOther)
-		return
-	}
-
-	createLandordTenantApplictionsCSRFTokenCookie := middleware.LandlordDashboardTenantApplicationsCSRFTokenCookie(w, csrfToken)
-	if !createLandordTenantApplictionsCSRFTokenCookie {
-		logs.Logs(logErr, "Failed to get CSRF token cookie for landlord tenant applications. Redirecting to landlord login page")
-		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+CSRF+token+cookie", http.StatusSeeOther)
-		return
-	}
-
-	// set cookie to logout landlord
+	// set cookies to logout
 	createSessionCookie := middleware.LogoutLandlordSessionCookie(w, sessionToken)
 	if !createSessionCookie {
 		logs.Logs(logErr, "Failed to create session cookie for landlord. Redirecting to landlord login page")
@@ -66,10 +51,10 @@ func LandlordDashboardTenants(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// direct user to protected landlord tenants page
-	err = Templates.ExecuteTemplate(w, "landlordDashboardTenants.html", nil)
+	// direct user to protected tenant applications
+	err = Templates.ExecuteTemplate(w, "tenantApplications.html", nil)
 	if err != nil {
-		logs.Logs(logErr, fmt.Sprintf("Unable to load landlord tenants: %s", err.Error()))
-		http.Error(w, fmt.Sprintf("Unable to load landlord tenants: %s", err.Error()), http.StatusInternalServerError)
+		logs.Logs(logErr, fmt.Sprintf("Unable to load landlord tenant applications: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Unable to load landlord tenant applications: %s", err.Error()), http.StatusInternalServerError)
 	}
 }

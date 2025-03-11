@@ -54,7 +54,7 @@ func LandlordDashboardCSRFTokenCookie(w http.ResponseWriter, csrfToken string, e
 		Name:     "csrf_token",
 		Value:    csrfToken,
 		Expires:  expiryTime,
-		HttpOnly: true,
+		HttpOnly: false,
 		Path:     "/landlord/dashboard",
 		SameSite: http.SameSiteStrictMode,
 	})
@@ -77,11 +77,11 @@ Returns:
 
 - bool: True if the cookie is set successfully.
 */
-func LandlordDashboardTenantsSessionCookie(w http.ResponseWriter, sessionToken string, expiryTime time.Time) bool {
+func LandlordDashboardTenantsSessionCookie(w http.ResponseWriter, sessionToken *http.Cookie) bool {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
-		Value:    sessionToken,
-		Expires:  expiryTime,
+		Value:    sessionToken.Value,
+		Expires:  sessionToken.Expires.Add(5 * time.Minute),
 		HttpOnly: true,
 		Path:     "/landlord/dashboard/tenants",
 		SameSite: http.SameSiteStrictMode,
@@ -105,13 +105,37 @@ Returns:
 
 - bool: True if the cookie is set successfully, false otherwise.
 */
-func LandlordDashboardTenantsCSRFTokenCookie(w http.ResponseWriter, csrfToken string, expiryTime time.Time) bool {
+func LandlordDashboardTenantsCSRFTokenCookie(w http.ResponseWriter, csrfToken *http.Cookie) bool {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "csrf_token",
-		Value:    csrfToken,
-		Expires:  expiryTime,
+		Value:    csrfToken.Value,
+		Expires:  csrfToken.Expires.Add(5 * time.Minute),
 		HttpOnly: false,
 		Path:     "/landlord/dashboard/tenants",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func LandlordDashboardTenantApplicationsSessionCookie(w http.ResponseWriter, sessionToken *http.Cookie) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    sessionToken.Value,
+		Expires:  sessionToken.Expires.Add(5 * time.Minute),
+		HttpOnly: true,
+		Path:     "/landlord/dashboard/tenant-applications",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func LandlordDashboardTenantApplicationsCSRFTokenCookie(w http.ResponseWriter, csrfToken *http.Cookie) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "csrf_token",
+		Value:    csrfToken.Value,
+		Expires:  csrfToken.Expires.Add(5 * time.Minute),
+		HttpOnly: false,
+		Path:     "/landlord/dashboard/tenant-applications",
 		SameSite: http.SameSiteStrictMode,
 	})
 	return true
@@ -160,7 +184,7 @@ func LogoutLandlordCSRFTokenCookie(w http.ResponseWriter, csrfToken *http.Cookie
 	http.SetCookie(w, &http.Cookie{
 		Name:     "csrf_token",
 		Value:    csrfToken.Value,
-		HttpOnly: true,
+		HttpOnly: false,
 		Path:     "/logout-landlord",
 		SameSite: http.SameSiteStrictMode,
 	})
@@ -208,7 +232,7 @@ func DeleteLandlordCSRFCookie(w http.ResponseWriter) bool {
 		Name:     "csrf_token",
 		Value:    "",
 		Expires:  time.Now().Add(-time.Hour),
-		HttpOnly: true,
+		HttpOnly: false,
 		Path:     "/",
 		SameSite: http.SameSiteStrictMode,
 	})

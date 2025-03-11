@@ -38,7 +38,8 @@ func StartHTTPServer() {
 	// protected routes
 	http.HandleFunc("/logout-landlord", LogoutLandlord)
 	http.HandleFunc("/landlord/dashboard", LandlordDashboard)
-	// http.HandleFunc("/landlord/dashboard/tenants", LandlordDashboardTenants)
+	http.HandleFunc("/landlord/dashboard/tenants", LandlordDashboardTenants)
+	http.HandleFunc("/landlord/dashboard/tenant-applications", LandlordTenantApplications)
 	// http.HandleFunc("/tenant/dashboard", TenantDashboard)
 
 	// initialise port for application
