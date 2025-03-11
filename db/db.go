@@ -747,3 +747,94 @@ func SaveTenantApplicationForm(
 	logs.Logs(logDb, "Tenant application stored to database successfully")
 	return nil
 }
+
+func GetAllTenantApplications() ([]GetLandlordApplications, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return nil, errors.New("database connection is not initialized")
+	}
+
+	// get landlord email via environment variable
+	if os.Getenv("LANDLORD_EMAIL") == "" {
+		logs.Logs(logWarning, "Could not get landlord email from hosting platform. Loading from .env file...")
+		err := env.LoadEnv("env/.env")
+		if err != nil {
+			logs.Logs(logErr, fmt.Sprintf("Could not load environment variables from .env file: %s", err.Error()))
+			return nil, err
+		}
+	}
+
+	landlordEmail := os.Getenv("LANDLORD_EMAIL")
+	if landlordEmail == "" {
+		logs.Logs(logDbErr, "Landlord email is empty!")
+		return nil, errors.New("landlord email is empty")
+	}
+
+	// get landlord id
+	landlordId, err := GetLandlordIdByEmail(landlordEmail)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to get landlord ID: %s", err.Error()))
+		return nil, err
+	}
+
+	query := `
+	SELECT * 
+	FROM lhp_tenant_application
+	WHERE landlord_id = $1
+	ORDER BY created_at DESC;
+	`
+	rows, err := db.Query(query, landlordId)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to get tenant applications: %s", err.Error()))
+		return nil, err
+	}
+	defer rows.Close()
+
+	var applicationsList []GetLandlordApplications
+
+	for rows.Next() {
+		var tenant GetLandlordApplications
+		err := rows.Scan(
+			&tenant.Status,
+			&tenant.FullName,
+			&tenant.Dob,
+			&tenant.PassportNumber,
+			&tenant.PhoneNumber,
+			&tenant.Email,
+			&tenant.Occupation,
+			&tenant.Employer,
+			&tenant.EmployerNumber,
+			&tenant.EmergencyContact,
+			&tenant.EmergencyContactNumber,
+			&tenant.Evicted,
+			&tenant.EvictedReason,
+			&tenant.Convicted,
+			&tenant.ConvictedReason,
+			&tenant.Smoke,
+			&tenant.Pets,
+			&tenant.Vehicle,
+			&tenant.VehicleReg,
+			&tenant.HaveChildren,
+			&tenant.Children,
+			&tenant.RefusedRent,
+			&tenant.RefusedReason,
+			&tenant.UnstableIncome,
+			&tenant.UnstableReason,
+			&tenant.CreatedAt,
+		)
+		if err != nil {
+			logs.Logs(logDbErr, fmt.Sprintf("Failed to scan tenant application: %s", err.Error()))
+			return nil, err
+		}
+		applicationsList = append(applicationsList, tenant)
+	}
+
+	// check for errors
+	err = rows.Err()
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to get tenant applications: %s", err.Error()))
+		return nil, err
+	}
+
+	return applicationsList, nil
+}

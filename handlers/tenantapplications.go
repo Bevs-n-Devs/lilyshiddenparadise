@@ -78,6 +78,42 @@ func LandlordTenantApplications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// get tenant applications from database
+	getTenantApplications, err := db.GetAllTenantApplications()
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to get tenant applications: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to get tenant applications: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	showTenantApplications := []ShowLandlordApplications{}
+
+	// loop through tenant applications and decrypt data
+	logs.Logs(logInfo, "Decrypting tenant applications...")
+	for index := range getTenantApplications {
+		var convertedData ShowLandlordApplications
+		convertedData.Status = getTenantApplications[index].Status
+
+		getTenantApplications[index].FullName, err = utils.Decrypt(getTenantApplications[index].FullName)
+		if err != nil {
+			logs.Logs(logErr, fmt.Sprintf("Failed to decrypt tenant application full name: %s", err.Error()))
+			http.Error(w, fmt.Sprintf("Failed to decrypt tenant application full name: %s", err.Error()), http.StatusInternalServerError)
+			return
+		}
+		convertedData.FullName = string(getTenantApplications[index].FullName)
+
+		getTenantApplications[index].Dob, err = utils.Decrypt(getTenantApplications[index].Dob)
+		if err != nil {
+			logs.Logs(logErr, fmt.Sprintf("Failed to decrypt tenant application date of birth: %s", err.Error()))
+			http.Error(w, fmt.Sprintf("Failed to decrypt tenant application date of birth: %s", err.Error()), http.StatusInternalServerError)
+			return
+		}
+		convertedData.Dob = string(getTenantApplications[index].Dob)
+
+		// append data to showTenanryApplications slice
+		showTenantApplications = append(showTenantApplications, convertedData)
+	}
+
 	// direct user to protected tenant applications
 	err = Templates.ExecuteTemplate(w, "tenantApplications.html", nil)
 	if err != nil {
