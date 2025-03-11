@@ -6,12 +6,19 @@ import (
 	"os"
 
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
+	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
 )
 
 func StartHTTPServer() {
 	logs.Logs(logInfo, "Starting HTTP server...")
 
 	InitTemplates()
+
+	// initialise encryption functions
+	err := utils.InitEncryption()
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Error initialising encryption functions: %s", err.Error()))
+	}
 
 	// Static file server for assets like CSS, JS, images
 	var staticFiles = http.FileServer(http.Dir("./static"))
@@ -48,7 +55,7 @@ func StartHTTPServer() {
 
 	// start server on hosting platform port
 	logs.Logs(logInfo, fmt.Sprintf("HTTP server running on http://localhost%s", httpPort))
-	err := http.ListenAndServe(httpPort, nil)
+	err = http.ListenAndServe(httpPort, nil)
 	if err != nil {
 		logs.Logs(logErr, fmt.Sprintf("Error starting HTTP server: %s", err.Error()))
 	}

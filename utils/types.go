@@ -21,7 +21,7 @@ var (
 
 func getMasterKeyStr() error {
 	if os.Getenv("MASTER_KEY") == "" {
-		logs.Logs(logWarn, "Could not get MASTER_KEY from Heroku. Loading from .env file...")
+		logs.Logs(logWarn, "Could not get MASTER_KEY from hosting platform. Loading from .env file...")
 		err := env.LoadEnv("env/.env")
 		if err != nil {
 			logs.Logs(logErr, fmt.Sprintf("Unable to load environment variables: %s", err.Error()))

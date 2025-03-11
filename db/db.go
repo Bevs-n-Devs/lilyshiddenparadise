@@ -323,6 +323,17 @@ func ValidateLandlordCSRFToken(email, csrfToken string) (bool, error) {
 	return true, nil
 }
 
+/*
+LogoutLandlord removes a landlord's session token, CSRF token and expiry time from the database.
+
+Arguments:
+
+- email: The landlord's email address to remove the session token, CSRF token and expiry time for.
+
+Returns:
+
+- error: An error object if the logout operation fails (e.g. if the database connection is not initialized).
+*/
 func LogoutLandlord(email string) error {
 	if db == nil {
 		logs.Logs(logDbErr, "Database connection is not initialized")
@@ -338,5 +349,401 @@ func LogoutLandlord(email string) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+/*
+GetLandlordIdByEmail takes an email address as an argument and returns the landlord_id associated with that email address in the database.
+
+Arguments:
+
+- email: The email address to get the landlord_id for.
+
+Returns:
+
+- int: The landlord_id associated with the email address.
+
+- error: An error object if the user is not found in the database or an error occurs while querying the database.
+*/
+func GetLandlordIdByEmail(email string) (int, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return 0, errors.New("database connection is not initialized")
+	}
+
+	var landlordId int
+	query := `
+	SELECT id 
+	FROM lhp_landlords 
+	WHERE email=$1;
+	`
+	err := db.QueryRow(query, email).Scan(&landlordId)
+	if err != nil {
+		return 0, err
+	}
+	return landlordId, nil
+}
+
+/*
+SaveTenantApplicationForm saves a tenant application form to the database.
+
+The function takes in all the values from the tenant application form and stores them in the database.
+The function first checks if the database connection is initialized and if the landlord email is not empty.
+Then, it gets the landlord ID from the database and hashes the identifiers.
+Next, the function encrypts the data using the aes encryption algorithm.
+Finally, the function executes a SQL query to store the tenant application form to the database.
+
+Arguments:
+
+- fullName: The tenant's full name.
+
+- dateOfBirth: The tenant's date of birth.
+
+- passportNumber: The tenant's passport number.
+
+- phoneNumber: The tenant's phone number.
+
+- email: The tenant's email address.
+
+- occupation: The tenant's occupation.
+
+- employer: The tenant's employer.
+
+- employerNumber: The tenant's employer's phone number.
+
+- emergencyContactName: The tenant's emergency contact name.
+
+- emergencyContactNumber: The tenant's emergency contact phone number.
+
+- emergencyContactAddress: The tenant's emergency contact address.
+
+- ifEvicted: Whether the tenant has been evicted before.
+
+- evictedReason: The reason for eviction if applicable.
+
+- ifConvicted: Whether the tenant has been convicted of a crime.
+
+- convictedReason: The reason for conviction if applicable.
+
+- smoke: Whether the tenant smokes.
+
+- pets: Whether the tenant has pets.
+
+- ifVehicle: Whether the tenant has a vehicle.
+
+- vehicleReg: The vehicle registration number if applicable.
+
+- haveChildren: Whether the tenant has children.
+
+- children: The number of children the tenant has if applicable.
+
+- refusedRent: Whether the tenant has refused rent before.
+
+- refusedRentReason: The reason for refusing rent if applicable.
+
+- unstableIncome: Whether the tenant has an unstable income.
+
+- incomeReason: The reason for unstable income if applicable.
+
+Returns:
+
+- error: An error object if the database connection is not initialized or if the landlord email is empty.
+*/
+func SaveTenantApplicationForm(
+	fullName,
+	dateOfBirth,
+	passportNumber,
+	phoneNumber,
+	email,
+	occupation,
+	employer,
+	employerNumber,
+	emergencyContactName,
+	emergencyContactNumber,
+	emergencyContactAddress,
+	ifEvicted,
+	evictedReason,
+	ifConvicted,
+	convictedReason,
+	smoke,
+	pets,
+	ifVehicle,
+	vehicleReg,
+	haveChildren,
+	children,
+	refusedRent,
+	refusedRentReason,
+	unstableIncome,
+	incomeReason string,
+) error {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return errors.New("database connection is not initialized")
+	}
+
+	// get landlord email via environment variable
+	if os.Getenv("LANDLORD_EMAIL") == "" {
+		logs.Logs(logWarning, "Could not get landlord email from hosting platform. Loading from .env file...")
+		err := env.LoadEnv("env/.env")
+		if err != nil {
+			logs.Logs(logErr, fmt.Sprintf("Could not load environment variables from .env file: %s", err.Error()))
+			return err
+		}
+	}
+
+	landlordEmail := os.Getenv("LANDLORD_EMAIL")
+	if landlordEmail == "" {
+		logs.Logs(logDbErr, "Landlord email is empty!")
+		return errors.New("landlord email is empty")
+	}
+
+	// get landlord id
+	landlordId, err := GetLandlordIdByEmail(landlordEmail)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to get landlord ID: %s", err.Error()))
+		return err
+	}
+
+	// hash identifiers
+	hashFullName := utils.HashData(fullName)
+	hashDob := utils.HashData(dateOfBirth)
+	hashPassportNumber := utils.HashData(passportNumber)
+	hashEmail := utils.HashData(email)
+
+	// set pending status
+	const status = "pending"
+
+	// encrypt data
+	encryptFullName, err := utils.Encrypt([]byte(fullName))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt full name: %s", err.Error()))
+		return err
+	}
+
+	encryptDob, err := utils.Encrypt([]byte(dateOfBirth))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt date of birth: %s", err.Error()))
+		return err
+	}
+
+	encryptPassportNumber, err := utils.Encrypt([]byte(passportNumber))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt passport number: %s", err.Error()))
+		return err
+	}
+
+	encryptPhoneNumber, err := utils.Encrypt([]byte(phoneNumber))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt phone number: %s", err.Error()))
+		return err
+	}
+
+	encryptEmail, err := utils.Encrypt([]byte(email))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt email: %s", err.Error()))
+		return err
+	}
+
+	encryptOccupation, err := utils.Encrypt([]byte(occupation))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt occupation: %s", err.Error()))
+		return err
+	}
+
+	encryptEmployer, err := utils.Encrypt([]byte(employer))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt employer: %s", err.Error()))
+		return err
+	}
+
+	encryptEmployerNumber, err := utils.Encrypt([]byte(employerNumber))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt employer number: %s", err.Error()))
+		return err
+	}
+
+	encryptEmergencyContact, err := utils.Encrypt([]byte(emergencyContactName))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt emergency contact name: %s", err.Error()))
+		return err
+	}
+
+	encryptEmergencyNumber, err := utils.Encrypt([]byte(emergencyContactNumber))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt emergency contact number: %s", err.Error()))
+		return err
+	}
+
+	encryptEmergencyAddress, err := utils.Encrypt([]byte(emergencyContactAddress))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt emergency contact address: %s", err.Error()))
+		return err
+	}
+
+	encryptIfEvicted, err := utils.Encrypt([]byte(ifEvicted))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt if evicted: %s", err.Error()))
+		return err
+	}
+
+	encryptEvictedReason, err := utils.Encrypt([]byte(evictedReason))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt evicted reason: %s", err.Error()))
+		return err
+	}
+
+	encryptIfConvicted, err := utils.Encrypt([]byte(ifConvicted))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt if convicted: %s", err.Error()))
+		return err
+	}
+
+	encryptConvictedReason, err := utils.Encrypt([]byte(convictedReason))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt convicted reason: %s", err.Error()))
+		return err
+	}
+
+	encryptSmoke, err := utils.Encrypt([]byte(smoke))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt smoke: %s", err.Error()))
+		return err
+	}
+
+	encryptPets, err := utils.Encrypt([]byte(pets))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt pets: %s", err.Error()))
+		return err
+	}
+
+	encryptIfVechicle, err := utils.Encrypt([]byte(ifVehicle))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt if vehicle: %s", err.Error()))
+		return err
+	}
+
+	encryptVehicleReg, err := utils.Encrypt([]byte(vehicleReg))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt vehicle registration: %s", err.Error()))
+		return err
+	}
+
+	encryptHaveChildren, err := utils.Encrypt([]byte(haveChildren))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt have children: %s", err.Error()))
+		return err
+	}
+
+	encryptChildren, err := utils.Encrypt([]byte(children))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt children: %s", err.Error()))
+		return err
+	}
+
+	encryptRefusedRent, err := utils.Encrypt([]byte(refusedRent))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt refused rent: %s", err.Error()))
+		return err
+	}
+
+	encryptRefusedRentReason, err := utils.Encrypt([]byte(refusedRentReason))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt refused rent reason: %s", err.Error()))
+		return err
+	}
+
+	encryptUnstableIncome, err := utils.Encrypt([]byte(unstableIncome))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt unstable income: %s", err.Error()))
+		return err
+	}
+
+	encryptIncomeReason, err := utils.Encrypt([]byte(incomeReason))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt income reason: %s", err.Error()))
+		return err
+	}
+
+	query := `
+	INSERT INTO lhp_tenant_application (
+		landlord_id,
+		hash_full_name,
+		hash_dob,
+		hash_passport_number,
+		hash_email,
+		status,
+		encrypt_full_name,
+		encrypt_dob,
+		encrypt_passport_number,
+		encrypt_phone_number,
+		encrypt_email,
+		encrypt_occupation,
+		encrypt_employer,
+		encrypt_employer_number,
+		encrypt_emergency_contact,
+		encrypt_emergency_number,
+		encrypt_emergency_address,
+		encrypt_if_evicted,
+		encrypt_evicted_reason,
+		encrypt_if_convicted,
+		encrypt_convicted_reason,
+		encrypt_smoke,
+		encrypt_pets,
+		encrypt_if_vehicle,
+		encrypt_vehicle_reg,
+		encrypt_have_children,
+		encrypt_children,
+		encrypt_refused_rent,
+		encrypt_refused_rent_reason,
+		encrypt_unstable_income,
+		encrypt_income_reason,
+		created_at
+	)
+	VALUES (
+		$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, NOW() 
+	);
+	`
+
+	// execute query
+	_, err = db.Exec(
+		query,
+		landlordId,
+		hashFullName,
+		hashDob,
+		hashPassportNumber,
+		hashEmail,
+		status,
+		encryptFullName,
+		encryptDob,
+		encryptPassportNumber,
+		encryptPhoneNumber,
+		encryptEmail,
+		encryptOccupation,
+		encryptEmployer,
+		encryptEmployerNumber,
+		encryptEmergencyContact,
+		encryptEmergencyNumber,
+		encryptEmergencyAddress,
+		encryptIfEvicted,
+		encryptEvictedReason,
+		encryptIfConvicted,
+		encryptConvictedReason,
+		encryptSmoke,
+		encryptPets,
+		encryptIfVechicle,
+		encryptVehicleReg,
+		encryptHaveChildren,
+		encryptChildren,
+		encryptRefusedRent,
+		encryptRefusedRentReason,
+		encryptUnstableIncome,
+		encryptIncomeReason,
+	)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to store tenant application to database: %s", err.Error()))
+		return err
+	}
+
+	logs.Logs(logDb, "Tenant application stored to database successfully")
 	return nil
 }

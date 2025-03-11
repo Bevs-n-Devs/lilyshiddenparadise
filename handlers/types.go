@@ -24,6 +24,7 @@ type ErrorMessages struct {
 	InternalServerError string
 	CookieError         string
 	// Tenancy form error messages
+	AgeError             string
 	EvictedError         string
 	ConvictedError       string
 	VehicleError         string
@@ -31,6 +32,7 @@ type ErrorMessages struct {
 	RefusedRentError     string
 	UnstableIncomeError  string
 	ConfirmPasswordError string
+	DatabaseError        string
 }
 
 // TODO: Create a struct for the tenancy form data

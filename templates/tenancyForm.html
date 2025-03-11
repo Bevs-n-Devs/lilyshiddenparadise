@@ -145,9 +145,15 @@
                     <div class="col-md-6">
                         <div class="form-wrapper">
                           <form action="/tenancy-form/submit" method="post">
+                            {{ if .DatabaseError }}
+                                <p style="color: red;">{{ .DatabaseError }}</p>
+                              {{ end }}
                               <label for="fullName">Full Name:</label>
                               <input type="text" name="fullName" id="name" placeholder="your full name..." required>
                               <label for="dob">Date of Birth:</label>
+                              {{ if .AgeError }}
+                                <p style="color: red;">{{ .AgeError }}</p>
+                              {{ end }}
                               <input type="date" name="dob" id="dob" placeholder="your date of birth..." required>
                               <label for="passportNumber">Passport Number:</label>
                               <input type="text" name="passportNumber" id="passportNumber" placeholder="your passport number..." required>
