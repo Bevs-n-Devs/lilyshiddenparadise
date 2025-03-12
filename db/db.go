@@ -778,7 +778,35 @@ func GetAllTenantApplications() ([]GetLandlordApplications, error) {
 	}
 
 	query := `
-	SELECT * 
+	SELECT 
+		id,
+		status,
+		encrypt_full_name,
+		encrypt_dob,
+		encrypt_passport_number,
+		encrypt_phone_number,
+		encrypt_email,
+		encrypt_occupation,
+		encrypt_employer,
+		encrypt_employer_number,
+		encrypt_emergency_contact,
+		encrypt_emergency_number,
+		encrypt_emergency_address,
+		encrypt_if_evicted,
+		encrypt_evicted_reason,
+		encrypt_if_convicted,
+		encrypt_convicted_reason,
+		encrypt_smoke,
+		encrypt_pets,
+		encrypt_if_vehicle,
+		encrypt_vehicle_reg,
+		encrypt_have_children,
+		encrypt_children,
+		encrypt_refused_rent,
+		encrypt_refused_rent_reason,
+		encrypt_unstable_income,
+		encrypt_income_reason,
+		created_at
 	FROM lhp_tenant_application
 	WHERE landlord_id = $1
 	ORDER BY created_at DESC;
@@ -795,6 +823,7 @@ func GetAllTenantApplications() ([]GetLandlordApplications, error) {
 	for rows.Next() {
 		var tenant GetLandlordApplications
 		err := rows.Scan(
+			&tenant.ID,
 			&tenant.Status,
 			&tenant.FullName,
 			&tenant.Dob,
@@ -806,6 +835,7 @@ func GetAllTenantApplications() ([]GetLandlordApplications, error) {
 			&tenant.EmployerNumber,
 			&tenant.EmergencyContact,
 			&tenant.EmergencyContactNumber,
+			&tenant.EmergencyContactAddress,
 			&tenant.Evicted,
 			&tenant.EvictedReason,
 			&tenant.Convicted,
