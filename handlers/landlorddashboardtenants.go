@@ -64,7 +64,7 @@ func LandlordDashboardTenants(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// set new cookies for landlord tenants
+	// set new cookies for landlord tenant applications
 	createLandlordTenantApplicationsSessionCookie := middleware.LandlordDashboardTenantApplicationsSessionCookie(w, newSessionToken, newExpiryTime)
 	if !createLandlordTenantApplicationsSessionCookie {
 		logs.Logs(logErr, "Failed to get session cookie for landlord tenant applications. Redirecting to landlord login page")

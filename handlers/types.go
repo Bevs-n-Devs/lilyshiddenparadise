@@ -33,6 +33,8 @@ type ErrorMessages struct {
 	UnstableIncomeError  string
 	ConfirmPasswordError string
 	DatabaseError        string
+	// Landlord tenant applications error messages
+	ValidationError string
 }
 
 // TODO: Create a struct for the tenancy form data
