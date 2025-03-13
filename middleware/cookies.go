@@ -173,6 +173,30 @@ func LandlordDashboardTenantApplicationsCSRFTokenCookie(w http.ResponseWriter, c
 	return true
 }
 
+func LandlordManageApplicationsSessionCookie(w http.ResponseWriter, sessionToken string, expiryTime time.Time) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    sessionToken,
+		Expires:  expiryTime,
+		HttpOnly: true,
+		Path:     "/landlord/dashboard/manage-applications",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func LandlordManageApplicationsCSRFTokenCookie(w http.ResponseWriter, csrfToken string, expiryTime time.Time) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "csrf_token",
+		Value:    csrfToken,
+		Expires:  expiryTime,
+		HttpOnly: false,
+		Path:     "/landlord/dashboard/manage-applications",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
 /*
 LogoutLandlordSessionCookie sets a cookie on the response to log out the landlord by setting the session token
 with the specified value and path to /logout-landlord.

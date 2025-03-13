@@ -40,6 +40,7 @@ func StartHTTPServer() {
 	http.HandleFunc("/landlord/dashboard", LandlordDashboard)
 	http.HandleFunc("/landlord/dashboard/tenants", LandlordDashboardTenants)
 	http.HandleFunc("/landlord/dashboard/tenant-applications", LandlordTenantApplications)
+	http.HandleFunc("/landlord/dashboard/manage-applications", LandlordManageApplications)
 	// http.HandleFunc("/tenant/dashboard", TenantDashboard)
 
 	// initialise port for application

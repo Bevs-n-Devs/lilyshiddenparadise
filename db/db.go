@@ -868,3 +868,24 @@ func GetAllTenantApplications() ([]GetLandlordApplications, error) {
 
 	return applicationsList, nil
 }
+
+func UpdateTenantApplicationStatus(id string, status string) error {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return errors.New("database connection is not initialized")
+	}
+
+	logs.Logs(logDb, "Updating tenant application status...")
+	query := `
+	UPDATE lhp_tenant_application
+	SET status = $1
+	WHERE id = $2;
+	`
+	_, err := db.Exec(query, status, id)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to update tenant application status: %s", err.Error()))
+		return err
+	}
+	logs.Logs(logDb, "Tenant application status updated successfully")
+	return nil
+}

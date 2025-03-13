@@ -99,7 +99,7 @@
                         <h1>Tenant Applications</h1>
                         <table class="address-table">
                                 <tbody>
-                                    {{ range .}}
+                                    {{ range .TenantApplications}}
                                         <tr>
                                             <td>Application ID:</td>
                                             <td>{{ .ID }} </td>
@@ -251,14 +251,40 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-wrapper">
-                          <form action="" method="post">
-                              <label for="fullName">Full Name:</label>
-                              <input type="text" name="fullName" id="name" placeholder="your full name..." required>
-                              <label for="dob">Date of Birth:</label>
-                              <input type="number" name="workNumber" id="workNumber" placeholder="your work number..." required>
-                              <label for="emergencyName">Emergency Name:</label>
-                              <input type="text" name="emergencyName" id="emergencyName" placeholder="emergency name..." required>
-                              <textarea type="text" name="incomeReason" id="incomeReason" placeholder="please explain what circumstances may interrupt your income or ability to pay rent..."></textarea>
+                          <form action="/landlord/dashboard/manage-applications" method="post">
+                            {{ if .ErrorMessage }}
+                            <label for="validation_error" style="color: red;">{{ .ErrorMessage }}</label>
+                            {{ end }}
+                              <label for="applicationId">Application ID:</label>
+                              <input type="number" name="applicationId" id="applicationId" placeholder="tenant application ID" required>
+                              <label for="applicationResult">Select An Outcome For This Application:</label>
+                              <select name="applicationResult" id="applicationResult" required>
+                                    <option value="">Please Select</option>
+                                    <option value="accepted">Accept</option>
+                                    <option value="denied">Deny</option>
+                              </select>
+                              <p>If you have accepted the application, please complete the following:</p>
+                              <label for="roomType">Room Type:</label>
+                              <select name="roomType" id="roomType">
+                                    <option value="">Please Select</option>
+                                    <option value="single">Single Room</option>
+                                    <option value="double">Double Room</option>
+                                    <option value="self-contained">Self Contained</option>
+                              </select>
+                              <label for="moveInDate">Move In Date:</label>
+                              <input type="date" name="moveInDate" id="moveInDate">
+                              <label for="rentDue">Rent Due:</label>
+                              <input type="date" name="rentDue" id="rentDue">
+                              <label for="monthlyRent">Monthly Rent:</label>
+                              <input type="number" name="monthlyRent" id="monthlyRent" placeholder="monthly rent">
+                              <label for="currrency">Currency:</label>
+                                <select name="currency" id="currency">
+                                        <option value="">Please Select</option>
+                                        <option value="bajan dollars">Bajan Dollars</option>
+                                        <option value="us dolars">US Dolars</option>
+                                        <option value="british pounds">Britsh Pounds</option>
+                                        <option value="euro">Euro</option>
+                                </select>
                               <input class="custom-button" type="submit" name="submit" value="Submit Form">
                           </form> 
                     </div>

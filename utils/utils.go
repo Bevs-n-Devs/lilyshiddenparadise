@@ -342,3 +342,43 @@ func ValidateAge(dateOfBirth string) bool {
 	}
 	return dob.Before(time.Now().Local().AddDate(-18, 0, 0))
 }
+
+/*
+ValidateManageTenantApplication validates the manage tenant application form data.
+
+Arguments:
+
+- applicationResult: The result of the tenant application. Accepted or Rejected.
+
+- roomType: The type of room to be allocated to the tenant.
+
+- moveInDate: The expected move in date of the tenant.
+
+- rentDue: The rent due date.
+
+- monthlyRent: The monthly rent for the room.
+
+- currency: The currency of the monthly rent.
+
+Returns:
+
+- error: An error if any of the required fields are empty when the application result is "accepted".
+*/
+func ValidateManageTenantApplication(applicationResult, roomType, moveInDate, rentDue, monthlyRent, currency string) error {
+	if applicationResult == "accepted" && roomType == "" {
+		return fmt.Errorf("room type is required")
+	}
+	if applicationResult == "accepted" && moveInDate == "" {
+		return fmt.Errorf("move in date is required")
+	}
+	if applicationResult == "accepted" && rentDue == "" {
+		return fmt.Errorf("rent due is required")
+	}
+	if applicationResult == "accepted" && monthlyRent == "" {
+		return fmt.Errorf("monthly rent is required")
+	}
+	if applicationResult == "accepted" && currency == "" {
+		return fmt.Errorf("currency is required")
+	}
+	return nil
+}

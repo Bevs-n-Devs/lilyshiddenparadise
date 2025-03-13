@@ -25,6 +25,12 @@ func LandlordTenantApplications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// get any error messages
+	validationError := r.URL.Query().Get("validationError")
+	data := ErrorMessages{
+		ValidationError: validationError,
+	}
+
 	// get session cookie
 	sessionToken, err := utils.CheckSessionToken(r)
 	if err != nil {
@@ -60,6 +66,34 @@ func LandlordTenantApplications(w http.ResponseWriter, r *http.Request) {
 	createLandordDashboardCSRFTokenCookie := middleware.LandlordDashboardCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
 	if !createLandordDashboardCSRFTokenCookie {
 		logs.Logs(logErr, "Failed to get CSRF token cookie for landlord dashboard. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+CSRF+token+cookie", http.StatusSeeOther)
+		return
+	}
+
+	// set new cookies for landlord tenant applications
+	createLandlordTenantApplicationsSessionCookie := middleware.LandlordDashboardTenantApplicationsSessionCookie(w, newSessionToken, newExpiryTime)
+	if !createLandlordTenantApplicationsSessionCookie {
+		logs.Logs(logErr, "Failed to get session cookie for landlord tenant applications. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+session+cookie", http.StatusSeeOther)
+		return
+	}
+	createLandordTenantApplictionsCSRFTokenCookie := middleware.LandlordDashboardTenantApplicationsCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
+	if !createLandordTenantApplictionsCSRFTokenCookie {
+		logs.Logs(logErr, "Failed to get CSRF token cookie for landlord tenant applications. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+CSRF+token+cookie", http.StatusSeeOther)
+		return
+	}
+
+	// set new cookies for landlord manage applications
+	createLandlordManageApplicationsSessionCookie := middleware.LandlordManageApplicationsSessionCookie(w, newSessionToken, newExpiryTime)
+	if !createLandlordManageApplicationsSessionCookie {
+		logs.Logs(logErr, "Failed to get session cookie for landlord manage applications. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+session+cookie", http.StatusSeeOther)
+		return
+	}
+	createLandordManageApplicationsCSRFTokenCookie := middleware.LandlordManageApplicationsCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
+	if !createLandordManageApplicationsCSRFTokenCookie {
+		logs.Logs(logErr, "Failed to get CSRF token cookie for landlord manage applications. Redirecting to landlord login page")
 		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+CSRF+token+cookie", http.StatusSeeOther)
 		return
 	}
@@ -293,8 +327,16 @@ func LandlordTenantApplications(w http.ResponseWriter, r *http.Request) {
 		showTenantApplications = append(showTenantApplications, convertedData)
 	}
 
+	showData := struct {
+		TenantApplications []ShowLandlordApplications
+		ErrorMessage       string
+	}{
+		TenantApplications: showTenantApplications,
+		ErrorMessage:       data.ValidationError,
+	}
+
 	// direct user to protected tenant applications
-	err = Templates.ExecuteTemplate(w, "tenantApplications.html", showTenantApplications)
+	err = Templates.ExecuteTemplate(w, "tenantApplications.html", showData)
 	if err != nil {
 		logs.Logs(logErr, fmt.Sprintf("Unable to load landlord tenant applications: %s", err.Error()))
 		http.Error(w, fmt.Sprintf("Unable to load landlord tenant applications: %s", err.Error()), http.StatusInternalServerError)
