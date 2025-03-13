@@ -7,9 +7,11 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"regexp"
 	"time"
 
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
@@ -381,4 +383,48 @@ func ValidateManageTenantApplication(applicationResult, roomType, moveInDate, re
 		return fmt.Errorf("currency is required")
 	}
 	return nil
+}
+
+/*
+ValidateEmail checks if a given email address is valid.
+
+Returns:
+
+- bool: True if the email address is valid, false otherwise.
+*/
+func ValidateEmail(email string) bool {
+	var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$`)
+	return emailRegex.MatchString(email)
+}
+
+/*
+GenerateTenantUsernamePassportNumberAndPassword generates a username and password for a tenant based on their email and passport number.
+
+The username is the same as the email.
+The password is the first four characters of the SHA-256 hash of the passport number including the passport number.
+
+Arguments:
+
+- email: The tenant's email address.
+
+- passportNumber: The tenant's passport number.
+
+Returns:
+
+- username: The username to use for the tenant.
+
+- password: The password to use for the tenant.
+
+- error: An error if any of the required fields are empty.
+*/
+func GenerateTenantUsernamePassportNumberAndPassword(email, passportNumber string) (string, string, error) {
+	if email == "" || passportNumber == "" {
+		return "", "", errors.New("email and passportNumber are required")
+	}
+
+	username := email
+	passwordHash := HashData(passportNumber)
+	passwordHash = passwordHash[:4]
+	password := fmt.Sprintf("%s%s", passwordHash, passportNumber)
+	return username, password, nil
 }

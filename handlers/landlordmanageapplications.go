@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/db"
+	"github.com/Bevs-n-Devs/lilyshiddenparadise/email"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/middleware"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
@@ -94,8 +95,6 @@ func LandlordManageApplications(w http.ResponseWriter, r *http.Request) {
 	monthlyRent := r.FormValue("monthlyRent")
 	currency := r.FormValue("currency")
 
-	// TODO: check if applicationResult is accepted or denied
-
 	// if the application has been denied
 	if applicationResult == "denied" {
 		err = db.UpdateTenantApplicationStatus(applicationId, applicationResult)
@@ -120,6 +119,56 @@ func LandlordManageApplications(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logs.Logs(logErr, fmt.Sprintf("Error updating tenant application status: %s", err.Error()))
 		http.Error(w, fmt.Sprintf("Error updating tenant application status: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	// TODO: get email & passport number via applicationID from database
+	encryptEmail, encryptPassportNumber, err := db.GetTenantEmailAndPassportNumberViaApplicationID(applicationId)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Error getting tenant email & passport number from database: %s", err.Error()))
+		http.Redirect(w, r, "/landlord/dashboard?internalServerError=INTERNAL+SERVER+ERROR+500:+Error+getting+tenant+email+&+passport+number+from+database", http.StatusSeeOther)
+		return
+	}
+
+	tenantEmail, err := (utils.Decrypt([]byte(encryptEmail)))
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Error decrypting email: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Error decrypting email: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+	strTenantEmail := string(tenantEmail)
+
+	tenantPassportNumber, err := (utils.Decrypt([]byte(encryptPassportNumber)))
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Error decrypting passport number: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Error decrypting passport number: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+	strTenantPassportNumber := string(tenantPassportNumber)
+
+	// TODO: generate new tenant username & password
+	tenantUsername, tenantPassword, err := utils.GenerateTenantUsernamePassportNumberAndPassword(strTenantEmail, strTenantPassportNumber)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Error generating tenant username & password: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Error generating tenant username & password: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	logs.Logs(logInfo, fmt.Sprintf("New tenant username: %s, New tenant password: %s", tenantUsername, tenantPassword))
+
+	// TODO: send email to tenant with new username & password
+	err = email.NotifyTenantNewAccount(tenantUsername, tenantPassword, roomType, moveInDate, rentDue, monthlyRent, currency)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to send email notification to tenant: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to send email notification to tenant: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	// TODO: send email to landlord with tenant username & password
+	err = email.NotifyLandlordNewAccount(tenantUsername, tenantPassword, roomType, moveInDate, rentDue, monthlyRent, currency)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to send email notification to landlord: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to send email notification to landlord: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
 

@@ -17,6 +17,7 @@ func TenancyForm(w http.ResponseWriter, r *http.Request) {
 	refusedRentError := r.URL.Query().Get("refusedRentError")
 	unstableIncomeError := r.URL.Query().Get("unstableIncomeError")
 	dbError := r.URL.Query().Get("dbError")
+	emailError := r.URL.Query().Get("emailError")
 
 	data := ErrorMessages{
 		AgeError:            ageError,
@@ -27,6 +28,7 @@ func TenancyForm(w http.ResponseWriter, r *http.Request) {
 		RefusedRentError:    refusedRentError,
 		UnstableIncomeError: unstableIncomeError,
 		DatabaseError:       dbError,
+		EmailError:          emailError,
 	}
 
 	// pass error messages to HTML template

@@ -889,3 +889,22 @@ func UpdateTenantApplicationStatus(id string, status string) error {
 	logs.Logs(logDb, "Tenant application status updated successfully")
 	return nil
 }
+
+func GetTenantEmailAndPassportNumberViaApplicationID(id string) (string, string, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return "", "", errors.New("database connection is not initialized")
+	}
+
+	var email, passportNumber string
+	query := `
+	SELECT encrypt_email, encrypt_passport_number
+	FROM lhp_tenant_application
+	WHERE id = $1;
+	`
+	err := db.QueryRow(query, id).Scan(&email, &passportNumber)
+	if err != nil {
+		return "", "", err
+	}
+	return email, passportNumber, nil
+}

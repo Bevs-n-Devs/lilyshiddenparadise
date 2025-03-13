@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/db"
+	"github.com/Bevs-n-Devs/lilyshiddenparadise/email"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
 )
@@ -29,7 +30,7 @@ func SubmitTenantForm(w http.ResponseWriter, r *http.Request) {
 	dateOfBirth := r.FormValue("dob")
 	passportNumber := r.FormValue("passportNumber")
 	phoneNumber := r.FormValue("phoneNumber")
-	email := r.FormValue("email")
+	tenantEmail := r.FormValue("email")
 	occupation := r.FormValue("occupation")
 	employer := r.FormValue("employedBy")
 	employerNumber := r.FormValue("workNumber")
@@ -119,7 +120,7 @@ func SubmitTenantForm(w http.ResponseWriter, r *http.Request) {
 		dateOfBirth,
 		passportNumber,
 		phoneNumber,
-		email,
+		tenantEmail,
 		occupation,
 		employer,
 		employerNumber,
@@ -147,9 +148,19 @@ func SubmitTenantForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: send email to landlord about application - note to go check dashboard
+	err = email.NotifyLandlordNewApplication()
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to send email notification to landlord: %s", err.Error()))
+		http.Redirect(w, r, "/tenancy-form?emailError=Failed+to+send+email+notification+to+landlord", http.StatusSeeOther)
+		return
+	}
 
-	// TODO: send email to tenant about application - note that application is being processed.
+	err = email.NotifyTenantApplicationProcessing(tenantEmail)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to send email notification to tenant: %s", err.Error()))
+		http.Redirect(w, r, "/tenancy-form?emailError=Failed+to+send+email+notification+to+tenant", http.StatusSeeOther)
+		return
+	}
 
 	// redirect to home page
 	logs.Logs(logInfo, "Form data saved successfully. Redirecting to home page.")
