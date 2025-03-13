@@ -251,14 +251,21 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-wrapper">
-                          <form action="" method="post">
-                              <label for="fullName">Full Name:</label>
-                              <input type="text" name="fullName" id="name" placeholder="your full name..." required>
-                              <label for="dob">Date of Birth:</label>
-                              <input type="number" name="workNumber" id="workNumber" placeholder="your work number..." required>
-                              <label for="emergencyName">Emergency Name:</label>
-                              <input type="text" name="emergencyName" id="emergencyName" placeholder="emergency name..." required>
-                              <textarea type="text" name="incomeReason" id="incomeReason" placeholder="please explain what circumstances may interrupt your income or ability to pay rent..."></textarea>
+                          <form action="/landlord/dashboard/manage-applications" method="post">
+                              <label for="applicationId">Application ID:</label>
+                              <input type="number" name="applicationId" id="applicationId" placeholder="tenant application ID" required>
+                              <label for="applicationResult">Select An Outcome For This Application:</label>
+                              <select name="applicationResult" id="applicationResult" required>
+                                    <option value="">Please Select</option>
+                                    <option value="accepted">Accept</option>
+                                    <option value="denied">Deny</option>
+                              </select>
+                              <p>If you have accepted the application, please complete the following:</p>
+                              <label for="roomType">Room Type:</label>
+                              <label for="moveInDate">Move In Date:</label>
+                              <label for="rentDue">Rent Due:</label>
+                              <label for="monthlyRent">Monthly Rent:</label>
+                              <label for="currrency">Currency:</label>
                               <input class="custom-button" type="submit" name="submit" value="Submit Form">
                           </form> 
                     </div>
