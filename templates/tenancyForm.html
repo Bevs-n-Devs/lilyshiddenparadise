@@ -145,8 +145,11 @@
                     <div class="col-md-6">
                         <div class="form-wrapper">
                           <form action="/tenancy-form/submit" method="post">
-                            {{ if .DatabaseError }}
+                              {{ if .DatabaseError }}
                                 <p style="color: red;">{{ .DatabaseError }}</p>
+                              {{ end }}
+                              {{ if .EmailError }}
+                                <p style="color: red;">{{ .EmailError }}</p>
                               {{ end }}
                               <label for="fullName">Full Name:</label>
                               <input type="text" name="fullName" id="name" placeholder="your full name..." required>

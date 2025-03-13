@@ -177,7 +177,7 @@ func LandlordManageApplicationsSessionCookie(w http.ResponseWriter, sessionToken
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
 		Value:    sessionToken,
-		Expires:  expiryTime,
+		Expires:  expiryTime.Add(5 * time.Minute),
 		HttpOnly: true,
 		Path:     "/landlord/dashboard/manage-applications",
 		SameSite: http.SameSiteStrictMode,
@@ -189,7 +189,7 @@ func LandlordManageApplicationsCSRFTokenCookie(w http.ResponseWriter, csrfToken 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "csrf_token",
 		Value:    csrfToken,
-		Expires:  expiryTime,
+		Expires:  expiryTime.Add(5 * time.Minute),
 		HttpOnly: false,
 		Path:     "/landlord/dashboard/manage-applications",
 		SameSite: http.SameSiteStrictMode,

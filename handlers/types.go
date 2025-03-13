@@ -33,6 +33,7 @@ type ErrorMessages struct {
 	UnstableIncomeError  string
 	ConfirmPasswordError string
 	DatabaseError        string
+	EmailError           string
 	// Landlord tenant applications error messages
 	ValidationError string
 }
