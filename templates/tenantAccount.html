@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--meta tags ends-->
 
-    <title>Tenant Login | Lilys Hidden Paradise</title>
+    <title>Tenant Account | Lilys Hidden Paradise</title>
 
     <!--- Links to google fonts -->
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,800%7cRoboto+Mono:400,700%7cMerriweather:300%7cAbril+Fatface'
@@ -95,25 +95,35 @@
                     
                         <div class="col-md-6">
                         <div class="address-wrapper wow fadeInUp" data-wow-delay="0.3s">
-                        <h1>Our Address</h1>
+                        <h1>Account Details</h1>
                         <table class="address-table">
                                 <tbody>
+                                    {{ range . }}
                                     <tr>
-                                        <td>Location</td>
-                                        <td>Bournes Village, St George<br>Barbados</td>
+                                        <td>My Email:</td>
+                                        <td>{{ .Email }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Phone:</td>
-                                        <td>+2462302047</td>
+                                        <td>Room Type:</td>
+                                        <td>{{ .RoomType }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Email:</td>
-                                        <td>foobar@email.com</td>
+                                        <td>Move In Date:</td>
+                                        <td>{{ .MoveInDate }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Instagram:</td>
-                                        <td>account.com/pages/foobar</td>
+                                        <td>Rent Due Date:</td>
+                                        <td>{{ .RentDueDate }}</td>
                                     </tr>
+                                    <tr>
+                                        <td>Monthly Rent:</td>
+                                        <td>{{ .MonthlyRent }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Currency:</td>
+                                        <td>{{ .Currency }}</td>
+                                    </tr>
+                                    {{ end }}
                                 </tbody>
                             </table>
                             </div>
@@ -123,8 +133,6 @@
                         <div id="map"></div>                     
                     </div>
                     </div>
-                    
-                    
             </div>
             </div>
         </section>
@@ -154,26 +162,18 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-wrapper">
-                          <form action="/login/tenant/submit" method="post">
-                              {{ if .BadRequestError }}
-                                  <label for="badRequestError" style="color: red;">{{ .BadRequestError }}</label>
-                                  <p style="color: red;">Failed to login to landlord account. Please try again.</p>
-                              {{ end }}
-                              {{ if .NotFoundError }}
-                                  <label for="notFoundError" style="color: red;">{{ .NotFoundError }}</label>
-                                  <p style="color: red;">Landlord account not found. Are you sure you have an account?</p>
-                              {{ end }}
-                              {{ if .AuthenticationError }}
-                                  <label for="authenticationError" style="color: red;">{{ .AuthenticationError }}</label>
-                                  <p style="color: red;">Failed to login to landlord account. Please try again.</p>
-                              {{ end }}
-                              {{ if .InternalServerError }}
-                                  <label for="internalServerError" style="color: red;">{{ .InternalServerError }}</label>
-                              {{ end }}
-                              <label for="account">Account:</label>
-                              <input type="email" name="tenantEmail" id="tenantEmail" placeholder="your email or account name...">
-                              <label for="tenantPassword">Your Password:</label>
-                              <input type="password" name="tenantPassword" id="tenantPassword" placeholder="your password...">
+                          <form action="/tenant/update-password" method="post">
+                              <label for="tenantEmail">Username:</label>
+                              <input type="email" name="tenantEmail" id="tenantEmail" placeholder="your email...">
+                              <label for="oldPassword">Old Password:</label>
+                              <input type="password" name="oldPassword" id="oldPassword" placeholder="your old password...">
+                              {{ if .Error.AuthenticationError }}
+                                <label style="color: red;">{{ .Error.AuthenticationError }}</label>
+                              {{ end if }}
+                              <label for="newPassword">New Password:</label>
+                              <input type="password" name="newPassword" id="newPassword" placeholder="your new password...">
+                              <label for="confirmPassword">Confirm New Password:</label>
+                              <input type="password" name="confirmPassword" id="confirmPassword" placeholder="confirm your new password...">
                               <input class="custom-button" type="submit" name="submit" value="Login">
                           </form> 
                     </div>

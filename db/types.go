@@ -43,3 +43,12 @@ type GetLandlordApplications struct {
 	UnstableReason          []byte `json:"unstable_reason"`
 	CreatedAt               string `json:"created_at"`
 }
+
+type GetTenantInformation struct {
+	Email       []byte `json:"encrypt_email"`
+	RoomType    []byte `json:"encrypt_room_type"`
+	MoveInDate  []byte `json:"encrypt_move_in_date"`
+	RentDueDate []byte `json:"encrypt_rent_due"`
+	MonthlyRent []byte `json:"encrypt_monthly_rent"`
+	Currency    string `json:"currency"`
+}

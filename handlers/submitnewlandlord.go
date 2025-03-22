@@ -30,7 +30,7 @@ func SubmitNewLandlord(w http.ResponseWriter, r *http.Request) {
 	confirmPassword := r.FormValue("confirmPassword")
 
 	// validate passwords
-	if !utils.ValidateNewLandlordPassword(landlordPassword, confirmPassword) {
+	if !utils.ValidateNewPassword(landlordPassword, confirmPassword) {
 		logs.Logs(logErr, "Passwords do not match. Please try again.")
 		http.Redirect(w, r, "/new/landlord?confirmPasswordError=Passwords+do+not+match.+Please+try+again.", http.StatusSeeOther)
 		return

@@ -294,3 +294,153 @@ func DeleteLandlordCSRFCookie(w http.ResponseWriter) bool {
 	})
 	return true
 }
+
+/*
+TenantDashboardSessionCookie sets a cookie on the response with the session token, expiry time, and path set to /tenant/dashboard.
+This is used to authenticate the tenant on the dashboard page.
+
+Parameters:
+
+- w: The http.ResponseWriter to set the cookie on.
+
+- sessionToken: The session token to set in the cookie.
+
+- expiryTime: The expiry time of the cookie.
+
+Returns:
+
+- bool: True if the cookie is set successfully, false otherwise.
+*/
+func TenantDashboardSessionCookie(w http.ResponseWriter, sessionToken string, expiryTime time.Time) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    sessionToken,
+		Expires:  expiryTime,
+		HttpOnly: true,
+		Path:     "/tenant/dashboard",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+/*
+TenantDashboardCSRFTokenCookie sets a cookie on the response with the CSRF token, expiry time, and path set to /tenant/dashboard.
+This is used to verify the authenticity of the requests to the tenant dashboard page.
+
+Parameters:
+
+- w: The http.ResponseWriter to set the cookie on.
+
+- csrfToken: The CSRF token to set in the cookie.
+
+- expiryTime: The expiry time of the cookie.
+
+Returns:
+
+- bool: True if the cookie is set successfully, false otherwise.
+*/
+func TenantDashboardCSRFTokenCookie(w http.ResponseWriter, csrfToken string, expiryTime time.Time) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "csrf_token",
+		Value:    csrfToken,
+		Expires:  expiryTime,
+		HttpOnly: false,
+		Path:     "/tenant/dashboard",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func LogoutTenantSessionCookie(w http.ResponseWriter, sessionToken string) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    sessionToken,
+		HttpOnly: true,
+		Path:     "/logout-tenant",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func LogoutTenantCSRFTokenCookie(w http.ResponseWriter, csrfToken string) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "csrf_token",
+		Value:    csrfToken,
+		HttpOnly: false,
+		Path:     "/logout-tenant",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func DeleteTenantSessionCookie(w http.ResponseWriter) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HttpOnly: true,
+		Path:     "/",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func DeleteTenantCSRFCookie(w http.ResponseWriter) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "csrf_token",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HttpOnly: false,
+		Path:     "/",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func TenantDashboardAccountSessionCookie(w http.ResponseWriter, sessionToken string, expiryTime time.Time) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    sessionToken,
+		Expires:  expiryTime,
+		HttpOnly: true,
+		Path:     "/tenant/dashboard/account",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func TenantDashboardAccountCSRFTokenCookie(w http.ResponseWriter, csrfToken string, expiryTime time.Time) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "csrf_token",
+		Value:    csrfToken,
+		Expires:  expiryTime,
+		HttpOnly: false,
+		Path:     "/tenant/dashboard/account",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func UpdateTenantPasswordSessionCookie(w http.ResponseWriter, sessionToken string, expiryTime time.Time) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    sessionToken,
+		Expires:  expiryTime,
+		HttpOnly: true,
+		Path:     "/tenant/update-password",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func UpdateTenantPasswordCSRFTokenCookie(w http.ResponseWriter, csrfToken string, expiryTime time.Time) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "csrf_token",
+		Value:    csrfToken,
+		Expires:  expiryTime,
+		HttpOnly: false,
+		Path:     "/tenant/update-password",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}

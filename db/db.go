@@ -106,6 +106,127 @@ func CreateNewLandlord(landlordEmail, landlordPassword string) error {
 }
 
 /*
+CreateNewTenant creates a new tenant record in the database.
+
+This function checks if the database connection is initialized and retrieves the landlord email from environment variables.
+If the landlord email is not found, it attempts to load it from a .env file. It then retrieves the landlord ID using the
+landlord email. The tenant's email and password are hashed and encrypted along with other tenant details such as room type,
+move-in date, rent due, and monthly rent. These details are then inserted into the lhp_tenants table.
+
+Arguments:
+
+- tenantEmail: The email address of the tenant.
+
+- tenantPassword: The password for the tenant's account.
+
+- roomType: The type of room assigned to the tenant.
+
+- moveInDate: The date the tenant will move in.
+
+- rentDue: The date rent payment is due each month.
+
+- monthlyRent: The amount of rent due each month.
+
+- currency: The currency in which the rent is paid.
+
+Returns:
+
+- error: An error object if the tenant cannot be created.
+*/
+func CreateNewTenant(tenantEmail, tenantPassword, roomType, moveInDate, rentDue, monthlyRent, currency string) error {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return errors.New("database connection is not initialized")
+	}
+
+	// get landlord email via environment variable
+	if os.Getenv("LANDLORD_EMAIL") == "" {
+		logs.Logs(logWarning, "Could not get landlord email from hosting platform. Loading from .env file...")
+		err := env.LoadEnv("env/.env")
+		if err != nil {
+			logs.Logs(logErr, fmt.Sprintf("Could not load environment variables from .env file: %s", err.Error()))
+			return err
+		}
+	}
+
+	landlordEmail := os.Getenv("LANDLORD_EMAIL")
+	if landlordEmail == "" {
+		logs.Logs(logDbErr, "Landlord email is empty!")
+		return errors.New("landlord email is empty")
+	}
+
+	// get landlord id
+	landlordId, err := GetLandlordIdByEmail(landlordEmail)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to get landlord ID: %s", err.Error()))
+		return err
+	}
+
+	// hash & encrypt identifiers
+	hashEmail := utils.HashData(tenantEmail)
+	hashPassword := utils.HashData(tenantPassword)
+
+	encrypt_email, err := utils.Encrypt([]byte(tenantEmail))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt email: %s", err.Error()))
+		return err
+	}
+
+	encrypt_password, err := utils.Encrypt([]byte(tenantPassword))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt password: %s", err.Error()))
+		return err
+	}
+
+	encrypt_room_type, err := utils.Encrypt([]byte(roomType))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt room type: %s", err.Error()))
+		return err
+	}
+
+	encrypt_move_in_date, err := utils.Encrypt([]byte(moveInDate))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt move in date: %s", err.Error()))
+		return err
+	}
+
+	encrypt_rent_due, err := utils.Encrypt([]byte(rentDue))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt rent due: %s", err.Error()))
+		return err
+	}
+
+	encrypt_monthly_rent, err := utils.Encrypt([]byte(monthlyRent))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt monthly rent: %s", err.Error()))
+		return err
+	}
+
+	query := `
+	INSERT INTO lhp_tenants (
+		landlord_id,
+		hash_email,
+		hash_password,
+		created_at,
+		encrypt_email,
+		encrypt_password,
+		encrypt_room_type,
+		encrypt_move_in_date,
+		encrypt_rent_due,
+		encrypt_monthly_rent,
+		currency
+	)
+	VALUES ($1, $2, $3, NOW(), $4, $5, $6, $7, $8, $9, $10);
+	`
+	_, err = db.Exec(query, landlordId, hashEmail, hashPassword, encrypt_email, encrypt_password, encrypt_room_type, encrypt_move_in_date, encrypt_rent_due, encrypt_monthly_rent, currency)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to create new tenant: %s", err.Error()))
+		return err
+	}
+	return nil
+}
+
+/*
 AuthenticateLandlord checks if the provided email and password match the stored credentials.
 
 It returns true if the credentials are correct, otherwise false. An error is returned if the query fails.
@@ -135,6 +256,51 @@ func AuthenticateLandlord(email, password string) (bool, error) {
 
 	ok := utils.CheckPasswordHash(password, hashedPassword)
 	if !ok {
+		return false, errors.New("invalid password")
+	}
+
+	return true, nil
+}
+
+/*
+AuthenticateTenant checks if the provided email and password match the stored credentials.
+
+It returns true if the credentials are correct, otherwise false. An error is returned if the query fails.
+
+Returns:
+
+- bool: True if the credentials are correct, otherwise false.
+
+- error: An error if the query fails.
+*/
+func AuthenticateTenant(username, password string) (bool, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return false, errors.New("database connection is not initialized")
+	}
+
+	var (
+		hashEmail    string
+		hashPassword string
+	)
+	query := `
+	SELECT hash_email, hash_password 
+	FROM lhp_tenants 
+	WHERE hash_email=$1
+		AND hash_password=$2;
+	`
+	err := db.QueryRow(query, username, password).Scan(&hashEmail, &hashPassword)
+	if err != nil {
+		return false, err
+	}
+
+	// verify username and password
+	verifyUsername := utils.VerifyHash(username, hashEmail)
+	if !verifyUsername {
+		return false, errors.New("invalid username")
+	}
+	verifyPassword := utils.VerifyHash(password, hashPassword)
+	if !verifyPassword {
 		return false, errors.New("invalid password")
 	}
 
@@ -182,6 +348,39 @@ func UpdateLandlordSessionTokens(email string) (string, string, time.Time, error
 	WHERE email=$4;
 	`
 	_, err = db.Exec(query, sessionToken, csrfToken, expiry, email)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to update session tokens: %s", err.Error()))
+		return "", "", time.Time{}, err
+	}
+
+	logs.Logs(logDb, "Session tokens updated successfully")
+	return sessionToken, csrfToken, expiry, nil
+}
+
+func UpdateTenantSessionTokens(hash_email string) (string, string, time.Time, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return "", "", time.Time{}, errors.New("database connection is not initialized")
+	}
+
+	sessionToken, err := utils.GenerateToken(32)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to generate session token: %s", err.Error()))
+		return "", "", time.Time{}, err
+	}
+	csrfToken, err := utils.GenerateToken(32)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to generate CSRF token: %s", err.Error()))
+		return "", "", time.Time{}, err
+	}
+	expiry := time.Now().Add(30 * time.Second) // 30 seconds validity
+
+	query := `
+	UPDATE lhp_tenants 
+	SET session_token=$1, csrf_token=$2, token_expiry=$3 
+	WHERE hash_email=$4;
+	`
+	_, err = db.Exec(query, sessionToken, csrfToken, expiry, hash_email)
 	if err != nil {
 		logs.Logs(logDbErr, fmt.Sprintf("Failed to update session tokens: %s", err.Error()))
 		return "", "", time.Time{}, err
@@ -282,6 +481,39 @@ func ValidateLandlordSessionToken(email, sessionToken string) (bool, error) {
 	return true, nil
 }
 
+func ValidateTenantSessionToken(hashEmail, sessionToken string) (bool, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return false, errors.New("database connection is not initialized")
+	}
+
+	// query DB to get the stored session token
+	var dbSessionToken string
+	query := `
+	SELECT session_token
+	FROM lhp_tenants
+	WHERE hash_email = $1;
+	`
+	err := db.QueryRow(query, hashEmail).Scan(&dbSessionToken)
+
+	if err == sql.ErrNoRows {
+		logs.Logs(logDbErr, "User not found")
+		return false, errors.New("user not found")
+	}
+
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to get session token: %s", err.Error()))
+		return false, err
+	}
+
+	// compare the input session token with DB session token
+	if sessionToken != dbSessionToken {
+		logs.Logs(logDbErr, "Invalid session token")
+		return false, nil
+	}
+	return true, nil
+}
+
 /*
 ValidateLandlordCSRFToken checks if a given CSRF token matches the stored CSRF token in the database
 for a specified landlord's email address.
@@ -323,6 +555,31 @@ func ValidateLandlordCSRFToken(email, csrfToken string) (bool, error) {
 	return true, nil
 }
 
+func ValidateTenantCSRFToken(hashEmail, csrfToken string) (bool, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return false, errors.New("database connection is not initialized")
+	}
+
+	// query DB to get the stored CSRF token
+	var dbCSRFToken string
+	query := `
+	SELECT csrf_token 
+	FROM lhp_tenants 
+	WHERE hash_email=$1;
+	`
+	err := db.QueryRow(query, hashEmail).Scan(&dbCSRFToken)
+	if err != nil {
+		return false, err
+	}
+
+	// compare the input CSRF token with DB CSRF token
+	if csrfToken != dbCSRFToken {
+		return false, nil
+	}
+	return true, nil
+}
+
 /*
 LogoutLandlord removes a landlord's session token, CSRF token and expiry time from the database.
 
@@ -346,6 +603,24 @@ func LogoutLandlord(email string) error {
 	WHERE email=$1;
 	`
 	_, err := db.Exec(query, email)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func LogoutTenant(hashEmail string) error {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return errors.New("database connection is not initialized")
+	}
+
+	query := `
+	UPDATE lhp_tenants 
+	SET session_token=NULL, csrf_token=NULL, token_expiry=NULL 
+	WHERE hash_email=$1;
+	`
+	_, err := db.Exec(query, hashEmail)
 	if err != nil {
 		return err
 	}
@@ -748,6 +1023,19 @@ func SaveTenantApplicationForm(
 	return nil
 }
 
+/*
+GetAllTenantApplications retrieves all tenant applications associated with the current landlord.
+
+This function checks if the database connection is initialized and retrieves the landlord's email from environment variables.
+If the email is not found, it attempts to load it from a .env file. It then retrieves the landlord ID using the landlord email.
+The function queries the database for all tenant applications related to this landlord ID, ordered by creation date in descending order.
+
+Returns:
+
+- []GetLandlordApplications: A slice containing the tenant applications.
+
+- error: An error object if the tenant applications cannot be retrieved.
+*/
 func GetAllTenantApplications() ([]GetLandlordApplications, error) {
 	if db == nil {
 		logs.Logs(logDbErr, "Database connection is not initialized")
@@ -869,6 +1157,19 @@ func GetAllTenantApplications() ([]GetLandlordApplications, error) {
 	return applicationsList, nil
 }
 
+/*
+UpdateTenantApplicationStatus updates the status of a tenant application in the database.
+
+Arguments:
+
+- id: The unique identifier of the tenant application to be updated.
+
+- status: The new status to set for the tenant application.
+
+Returns:
+
+- error: An error if the status cannot be updated in the database.
+*/
 func UpdateTenantApplicationStatus(id string, status string) error {
 	if db == nil {
 		logs.Logs(logDbErr, "Database connection is not initialized")
@@ -890,6 +1191,21 @@ func UpdateTenantApplicationStatus(id string, status string) error {
 	return nil
 }
 
+/*
+GetTenantEmailAndPassportNumberViaApplicationID retrieves the encrypted email and passport number for a tenant application.
+
+Arguments:
+
+- id: The unique identifier of the tenant application.
+
+Returns:
+
+- string: The encrypted email of the tenant.
+
+- string: The encrypted passport number of the tenant.
+
+- error: An error object if there is an issue retrieving the data from the database.
+*/
 func GetTenantEmailAndPassportNumberViaApplicationID(id string) (string, string, error) {
 	if db == nil {
 		logs.Logs(logDbErr, "Database connection is not initialized")
@@ -907,4 +1223,109 @@ func GetTenantEmailAndPassportNumberViaApplicationID(id string) (string, string,
 		return "", "", err
 	}
 	return email, passportNumber, nil
+}
+
+func GetHashedEmailFromTenantSessionToken(sessionToken string) (string, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return "", errors.New("database connection is not initialized")
+	}
+
+	var hashEmail string
+	query := `
+	SELECT hash_email 
+	FROM lhp_tenants 
+	WHERE session_token=$1;
+	`
+	err := db.QueryRow(query, sessionToken).Scan(&hashEmail)
+
+	if err == sql.ErrNoRows {
+		logs.Logs(logDbErr, "User not found")
+		return "", errors.New("user not found")
+	}
+
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to get session token: %s", err.Error()))
+		return "", err
+	}
+
+	return hashEmail, nil
+}
+
+func UpdateTenantPassword(hashEmail, newPasswordHash, newPassword string) error {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return errors.New("database connection is not initialized")
+	}
+
+	ecnryptNewPassword, err := utils.Encrypt([]byte(newPassword))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt password: %s", err.Error()))
+		return err
+	}
+
+	query := `
+	UPDATE lhp_tenants
+	SET hash_password = $1, encrypt_password = $2
+	WHERE hash_email = $3;
+	`
+	_, err = db.Exec(query, newPasswordHash, ecnryptNewPassword, hashEmail)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to update password: %s", err.Error()))
+		return err
+	}
+
+	logs.Logs(logDb, "Password updated successfully")
+	return nil
+}
+
+func GetTenantInformationByHashEmail(hashEmail string) (GetTenantInformation, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return GetTenantInformation{}, errors.New("database connection is not initialized")
+	}
+
+	query := `
+	SELECT
+		encrypt_email,
+		encrypt_room_type,
+		encrypt_move_in_date,
+		encrypt_rent_due,
+		encrypt_monthly_rent,
+		currency
+	FROM lhp_tenants
+	WHERE hash_email = $1;
+	`
+	row, err := db.Query(query, hashEmail)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to get tenant information: %s", err.Error()))
+		return GetTenantInformation{}, err
+	}
+	defer row.Close()
+
+	if !row.Next() {
+		return GetTenantInformation{}, sql.ErrNoRows
+	}
+
+	var tenantInformation GetTenantInformation
+	err = row.Scan(
+		&tenantInformation.Email,
+		&tenantInformation.RoomType,
+		&tenantInformation.MoveInDate,
+		&tenantInformation.RentDueDate,
+		&tenantInformation.MonthlyRent,
+		&tenantInformation.Currency,
+	)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to scan tenant information: %s", err.Error()))
+		return GetTenantInformation{}, err
+	}
+
+	err = row.Err()
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to get tenant information: %s", err.Error()))
+		return GetTenantInformation{}, err
+	}
+
+	return tenantInformation, nil
 }

@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	logInfo = 1
-	logErr  = 3
+	logInfo  = 1
+	logDbErr = 5
 )
 
 func main() {
@@ -19,7 +19,7 @@ func main() {
 
 	err := db.ConnectDB()
 	if err != nil {
-		logs.Logs(logErr, fmt.Sprintf("Error connecting to database: %s", err.Error()))
+		logs.Logs(logDbErr, fmt.Sprintf("Error connecting to database: %s", err.Error()))
 		return
 	}
 

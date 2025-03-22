@@ -76,3 +76,50 @@ func AuthenticateLandlordRequest(r *http.Request) error {
 
 	return nil
 }
+
+func AuthenticateTenantRequest(r *http.Request) error {
+	// get the session token from the cookie
+
+	sessionToken, err := utils.CheckSessionToken(r)
+	if err != nil {
+		return fmt.Errorf("%s Session token is missing", err.Error())
+	}
+
+	email, err := db.GetHashedEmailFromTenantSessionToken(sessionToken.Value)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to get email from session token: %s", err.Error()))
+		return fmt.Errorf("%s! Failed to get email from session token", errAuth)
+	}
+
+	// check if email and session token exists in the database
+	exists, err := db.ValidateTenantSessionToken(email, sessionToken.Value)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to validate tenant session token: %s", err.Error()))
+		return fmt.Errorf("%s! Failed to validate tenant session token", errAuth)
+	}
+	if !exists {
+		logs.Logs(logErr, "Invlaid tenant session token.")
+		return fmt.Errorf("%s! Invalid tenant session token", errAuth)
+	}
+	logs.Logs(logInfo, fmt.Sprintf("tenant session validation result: %t", exists))
+
+	// get csrf token from the cookie
+	csrfToken, err := utils.CheckCSRFToken(r)
+	if err != nil {
+		return fmt.Errorf("%s Failed to get CSRF token", err.Error())
+	}
+
+	// check if email and csrf token exists in the database
+	exists, err = db.ValidateTenantCSRFToken(email, csrfToken.Value)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to validate tenant CSRF token: %s", err.Error()))
+		return fmt.Errorf("%s! Failed to validate tenant CSRF token", errAuth)
+	}
+	if !exists {
+		logs.Logs(logErr, "Invalid tenant CSRF token.")
+		return fmt.Errorf("%s! Invalid tenant CSRF token", errAuth)
+	}
+	logs.Logs(logInfo, fmt.Sprintf("Tenant CSRF token validation result: %t", exists))
+
+	return nil
+}

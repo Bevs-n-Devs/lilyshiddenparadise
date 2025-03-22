@@ -70,3 +70,13 @@ type ShowLandlordApplications struct {
 	UnstableReason          string `json:"unstable_reason"`
 	CreatedAt               string `json:"created_at"`
 }
+
+type ShowTenantInformation struct {
+	Email       string `json:"email"`
+	RoomType    string `json:"room_type"`
+	MoveInDate  string `json:"move_in_date"`
+	RentDueDate string `json:"rent_due"`
+	MonthlyRent string `json:"monthly_rent"`
+	Currency    string `json:"currency"`
+	Error       ErrorMessages
+}
