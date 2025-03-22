@@ -87,6 +87,7 @@ func LandlordManageApplications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// extract data from form
 	applicationId := r.FormValue("applicationId")
 	applicationResult := r.FormValue("applicationResult")
 	roomType := r.FormValue("roomType")
@@ -169,6 +170,14 @@ func LandlordManageApplications(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logs.Logs(logErr, fmt.Sprintf("Failed to send email notification to landlord: %s", err.Error()))
 		http.Error(w, fmt.Sprintf("Failed to send email notification to landlord: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	// TODO: Save tenant to database
+	err = db.CreateNewTenant(tenantUsername, tenantPassword, roomType, moveInDate, rentDue, monthlyRent, currency)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to save tenant to database: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to save tenant to database: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
 

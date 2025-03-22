@@ -207,7 +207,7 @@ Returns:
 
 - bool: True if the passwords match, false if not.
 */
-func ValidateNewLandlordPassword(password, confirmPassword string) bool {
+func ValidateNewPassword(password, confirmPassword string) bool {
 	return password == confirmPassword
 }
 
