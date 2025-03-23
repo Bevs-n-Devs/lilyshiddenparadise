@@ -101,7 +101,8 @@ func UpdateTenantPassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: update password in database (will also need to encrypt updated password)
-	err = db.UpdateTenantPassword(hashTenantEmail, hashTenantPassword, formNewPassword)
+	newPasswordHash := utils.HashData(formNewPassword)
+	err = db.UpdateTenantPassword(hashTenantEmail, newPasswordHash, formNewPassword)
 	if err != nil {
 		logs.Logs(logErr, fmt.Sprintf("Error updating tenant password: %s. Redirecting to tenant login page", err.Error()))
 		http.Redirect(w, r, "/login/tenant?authenticationError=UNAUTHORIZED+401:+Error+updating+tenant+password", http.StatusSeeOther)

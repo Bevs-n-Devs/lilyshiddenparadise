@@ -425,7 +425,7 @@ func UpdateTenantPasswordSessionCookie(w http.ResponseWriter, sessionToken strin
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
 		Value:    sessionToken,
-		Expires:  expiryTime,
+		Expires:  expiryTime.Add(1 * time.Minute),
 		HttpOnly: true,
 		Path:     "/tenant/update-password",
 		SameSite: http.SameSiteStrictMode,
@@ -437,7 +437,7 @@ func UpdateTenantPasswordCSRFTokenCookie(w http.ResponseWriter, csrfToken string
 	http.SetCookie(w, &http.Cookie{
 		Name:     "csrf_token",
 		Value:    csrfToken,
-		Expires:  expiryTime,
+		Expires:  expiryTime.Add(1 * time.Minute),
 		HttpOnly: false,
 		Path:     "/tenant/update-password",
 		SameSite: http.SameSiteStrictMode,
