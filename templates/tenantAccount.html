@@ -67,15 +67,16 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a class="navbar-brand" href="/">LHP</a>
+                        <a class="navbar-brand" href="/tenant/dashboard">My Dashboard</a>
                     </div>
 
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="top-navigation-bar">
                         <ul class="nav navbar-nav navbar-right">
-                            <li class="active"><a href="/">Home</a></li>
-                            <li><a href="/tenancy-form">Tenancy</a></li>
-                            <li><a href="/login/tenant">Login</a></li>                            
+                            <li class="active"><a href="/tenant/dashboard">Dashboard</a></li>
+                            <li><a href="/tenant/dashboard/account">Account</a></li>
+                            <li><a href="">Messages</a></li>
+                            <li><a href="/logout-tenant">Logout</a></li>
                         </ul>
                     </div>
                     <!-- /.navbar-collapse -->
@@ -98,7 +99,6 @@
                         <h1>Account Details</h1>
                         <table class="address-table">
                                 <tbody>
-                                    {{ range . }}
                                     <tr>
                                         <td>My Email:</td>
                                         <td>{{ .Email }}</td>
@@ -123,7 +123,6 @@
                                         <td>Currency:</td>
                                         <td>{{ .Currency }}</td>
                                     </tr>
-                                    {{ end }}
                                 </tbody>
                             </table>
                             </div>
@@ -143,20 +142,20 @@
                     
                     <div class="col-md-6">
                     <div class="email-wrapper">
-                        <h1>Login To Tenant Account</h1>
+                        <h1>Update Your Password</h1>
                         <div class="section-snippet hidden-xs">
-                          <span class="snippet-heading">Are you a landlord?</span>
-                          <span style="color: #FB0097;">Click <a href="/new/landlord" style="color:#14962c;">here</a> to create your account</span>  
+                          <span class="snippet-heading">View Dashboard</span>
+                          <span style="color: #FB0097;">Click <a href="/tenant/dashboard" style="color:#14962c;">here</a> to go back to your dashboard.</span>  
                         </div>
 
                         <div class="section-snippet hidden-xs">
-                          <span class="snippet-heading">Already have a landlord account?</span>
-                          <span style="color: #FB0097;">Click <a href="/login/landlord" style="color:#14962c;">here</a> to login</span>  
+                          <span class="snippet-heading">Message Landlord</span>
+                          <span style="color: #FB0097;">Click <a href="" style="color:#14962c;">here</a> to view or send messages to your landlord.</span>  
                         </div>
 
                         <div class="section-snippet hidden-xs">
-                            <span class="snippet-heading">Don't have a tenant account?</span>
-                            <span style="color: #FB0097;">Complete your <a href="/tenancy-form" style="color:#14962c;">Tenancy Form</a> to obtain an account</span></span>
+                            <span class="snippet-heading">Logout</span>
+                            <span style="color: #FB0097;">Click <a href="/logout-tenant" style="color:#14962c;">here</a> to logout.</span></span>
                         </div>
                      </div>  
                     </div>
@@ -171,7 +170,7 @@
                               <input type="password" name="newPassword" id="newPassword" placeholder="your new password...">
                               <label for="confirmPassword">Confirm New Password:</label>
                               <input type="password" name="confirmPassword" id="confirmPassword" placeholder="confirm your new password...">
-                              <input class="custom-button" type="submit" name="submit" value="Login">
+                              <input class="custom-button" type="submit" name="submit" value="Update">
                           </form> 
                     </div>
                     </div>
