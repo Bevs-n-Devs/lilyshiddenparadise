@@ -167,9 +167,6 @@
                               <input type="email" name="tenantEmail" id="tenantEmail" placeholder="your email...">
                               <label for="oldPassword">Old Password:</label>
                               <input type="password" name="oldPassword" id="oldPassword" placeholder="your old password...">
-                              {{ if .Error.AuthenticationError }}
-                                <label style="color: red;">{{ .Error.AuthenticationError }}</label>
-                              {{ end if }}
                               <label for="newPassword">New Password:</label>
                               <input type="password" name="newPassword" id="newPassword" placeholder="your new password...">
                               <label for="confirmPassword">Confirm New Password:</label>
