@@ -11,7 +11,7 @@ import (
 )
 
 func SendMessageToLandlord(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		logs.Logs(logErr, fmt.Sprintf("Invalid request method: %s. Redirecting back to tenant login page.", r.Method))
 		http.Redirect(w, r, "/login/tenant?badRequest=BAD+REQUEST+400:+Invalid+request+method", http.StatusBadRequest)
 		return
