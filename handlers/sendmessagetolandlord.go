@@ -94,6 +94,20 @@ func SendMessageToLandlord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// set session to submit message route
+	createSubmitMessageToLandlordSessionCookie := middleware.SubmitMessageToLandlordSessionCookie(w, newSessionToken, newExpiryTime)
+	if !createSubmitMessageToLandlordSessionCookie {
+		logs.Logs(logErr, "Failed to create session cookie. Redirecting back to tenant login page...")
+		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+session+cookie", http.StatusInternalServerError)
+		return
+	}
+	createSubmitMessageToLandlordCsrfTokenCookie := middleware.SubmitMessageToLandlordCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
+	if !createSubmitMessageToLandlordCsrfTokenCookie {
+		logs.Logs(logErr, "Failed to create CSRF cookie. Redirecting back to tenant login page...")
+		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+CSRF+cookie", http.StatusInternalServerError)
+		return
+	}
+
 	// set session cookies to logout tenant
 	createTenantLogoutSessionCookie := middleware.LogoutTenantSessionCookie(w, newSessionToken)
 	if !createTenantLogoutSessionCookie {
