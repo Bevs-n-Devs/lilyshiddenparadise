@@ -431,6 +431,33 @@ func GetEmailFromLandlordSessionToken(sessionToken string) (string, error) {
 	return email, nil
 }
 
+func GetEmailFromTenantSessionToken(sessionToken string) (string, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return "", errors.New("database connection is not initialized")
+	}
+
+	var email string
+	query := `
+	SELECT email 
+	FROM lhp_tenants 
+	WHERE session_token=$1;
+	`
+	err := db.QueryRow(query, sessionToken).Scan(&email)
+
+	if err == sql.ErrNoRows {
+		logs.Logs(logDbErr, "User not found")
+		return "", errors.New("user not found")
+	}
+
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to get session token: %s", err.Error()))
+		return "", err
+	}
+
+	return email, nil
+}
+
 /*
 ValidateLandlordSessionToken checks if a given session token matches the stored session token in the database
 for a given landlord's email address.
@@ -657,6 +684,25 @@ func GetLandlordIdByEmail(email string) (int, error) {
 		return 0, err
 	}
 	return landlordId, nil
+}
+
+func GetTenantIdByEmail(email string) (int, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return 0, errors.New("database connection is not initialized")
+	}
+
+	var tenantId int
+	query := `
+	SELECT id 
+	FROM lhp_tenants 
+	WHERE email=$1;
+	`
+	err := db.QueryRow(query, email).Scan(&tenantId)
+	if err != nil {
+		return 0, err
+	}
+	return tenantId, nil
 }
 
 /*
