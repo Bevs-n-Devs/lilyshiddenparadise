@@ -295,6 +295,30 @@ func DeleteLandlordCSRFCookie(w http.ResponseWriter) bool {
 	return true
 }
 
+func SendMessageToTenantSessionCookie(w http.ResponseWriter, sessionToken string, expiryTime time.Time) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    sessionToken,
+		Expires:  expiryTime,
+		HttpOnly: true,
+		Path:     "/tenant/send-message-to-tenant",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func SendMessageToTenantCSRFTokenCookie(w http.ResponseWriter, csrfToken string, expiryTime time.Time) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "csrf_token",
+		Value:    csrfToken,
+		Expires:  expiryTime,
+		HttpOnly: false,
+		Path:     "/tenant/send-message-to-tenant",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
 /*
 TenantDashboardSessionCookie sets a cookie on the response with the session token, expiry time, and path set to /tenant/dashboard.
 This is used to authenticate the tenant on the dashboard page.
@@ -440,6 +464,54 @@ func UpdateTenantPasswordCSRFTokenCookie(w http.ResponseWriter, csrfToken string
 		Expires:  expiryTime.Add(1 * time.Minute),
 		HttpOnly: false,
 		Path:     "/tenant/update-password",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func SendMessageToLandlordSessionCookie(w http.ResponseWriter, sessionToken string, expiryTime time.Time) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    sessionToken,
+		Expires:  expiryTime,
+		HttpOnly: true,
+		Path:     "/tenant/dashboard/messages",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func SendMessageToLandlordCSRFTokenCookie(w http.ResponseWriter, csrfToken string, expiryTime time.Time) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "csrf_token",
+		Value:    csrfToken,
+		Expires:  expiryTime,
+		HttpOnly: false,
+		Path:     "/tenant/dashboard/messages",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func SubmitMessageToLandlordSessionCookie(w http.ResponseWriter, sessionToken string, expiryTime time.Time) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    sessionToken,
+		Expires:  expiryTime.Add(2 * time.Minute),
+		HttpOnly: true,
+		Path:     "/tenant/send-message",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func SubmitMessageToLandlordCSRFTokenCookie(w http.ResponseWriter, csrfToken string, expiryTime time.Time) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "csrf_token",
+		Value:    csrfToken,
+		Expires:  expiryTime.Add(2 * time.Minute),
+		HttpOnly: false,
+		Path:     "/tenant/send-message",
 		SameSite: http.SameSiteStrictMode,
 	})
 	return true

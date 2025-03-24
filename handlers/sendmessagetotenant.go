@@ -10,8 +10,8 @@ import (
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
 )
 
-func TenantDashboard(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+func SendMessageToTenant(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
 		logs.Logs(logErr, fmt.Sprintf("Invalid request method: %s. Redirecting back to tenant login page.", r.Method))
 		http.Redirect(w, r, "/login/tenant?badRequest=BAD+REQUEST+400:+Invalid+request+method", http.StatusBadRequest)
 		return
@@ -94,6 +94,20 @@ func TenantDashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// set session to submit message route
+	createSubmitMessageToLandlordSessionCookie := middleware.SubmitMessageToLandlordSessionCookie(w, newSessionToken, newExpiryTime)
+	if !createSubmitMessageToLandlordSessionCookie {
+		logs.Logs(logErr, "Failed to create session cookie. Redirecting back to tenant login page...")
+		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+session+cookie", http.StatusInternalServerError)
+		return
+	}
+	createSubmitMessageToLandlordCsrfTokenCookie := middleware.SubmitMessageToLandlordCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
+	if !createSubmitMessageToLandlordCsrfTokenCookie {
+		logs.Logs(logErr, "Failed to create CSRF cookie. Redirecting back to tenant login page...")
+		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+CSRF+cookie", http.StatusInternalServerError)
+		return
+	}
+
 	// set session cookies to logout tenant
 	createTenantLogoutSessionCookie := middleware.LogoutTenantSessionCookie(w, newSessionToken)
 	if !createTenantLogoutSessionCookie {
@@ -108,9 +122,6 @@ func TenantDashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = Templates.ExecuteTemplate(w, "tenantDashboard.html", nil)
-	if err != nil {
-		logs.Logs(logErr, fmt.Sprintf("Unable to load tenant dashboard: %s", err.Error()))
-		http.Error(w, fmt.Sprintf("Unable to load tenant dashboard: %s", err.Error()), http.StatusInternalServerError)
-	}
+	// redirect to tenant message dashboard if message successfully sent
+	http.Redirect(w, r, "/tenant/dashboard/messages", http.StatusSeeOther)
 }

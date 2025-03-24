@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--meta tags ends-->
 
-    <title>Tenant Account | Lilys Hidden Paradise</title>
+    <title>Message Dashboard | Lilys Hidden Paradise</title>
 
     <!--- Links to google fonts -->
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,800%7cRoboto+Mono:400,700%7cMerriweather:300%7cAbril+Fatface'
@@ -96,32 +96,18 @@
                     
                         <div class="col-md-6">
                         <div class="address-wrapper wow fadeInUp" data-wow-delay="0.3s">
-                        <h1>Account Details</h1>
+                        <h1>Message Dashboard</h1>
                         <table class="address-table">
                                 <tbody>
                                     <tr>
-                                        <td>My Email:</td>
-                                        <td>{{ .Email }}</td>
+                                        <td>Tenant:</td>
+                                        <td>tenant message</td>
+                                        <td>tenant time</td>
                                     </tr>
                                     <tr>
-                                        <td>Room Type:</td>
-                                        <td>{{ .RoomType }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Move In Date:</td>
-                                        <td>{{ .MoveInDate }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Rent Due Date:</td>
-                                        <td>{{ .RentDueDate }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Monthly Rent:</td>
-                                        <td>{{ .MonthlyRent }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Currency:</td>
-                                        <td>{{ .Currency }}</td>
+                                        <td>Landord:</td>
+                                        <td>landlord message</td>
+                                        <td>landlord time</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -150,7 +136,7 @@
 
                         <div class="section-snippet hidden-xs">
                           <span class="snippet-heading">Message Landlord</span>
-                          <span style="color: #FB0097;">Click <a href="/tenant/dashboard/messages" style="color:#14962c;">here</a> to view or send messages to your landlord.</span>  
+                          <span style="color: #FB0097;">Click <a href="" style="color:#14962c;">here</a> to view or send messages to your landlord.</span>  
                         </div>
 
                         <div class="section-snippet hidden-xs">
@@ -161,16 +147,10 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-wrapper">
-                          <form action="/tenant/update-password" method="post">
-                              <label for="tenantEmail">Username:</label>
-                              <input type="email" name="tenantEmail" id="tenantEmail" placeholder="your email...">
-                              <label for="oldPassword">Old Password:</label>
-                              <input type="password" name="oldPassword" id="oldPassword" placeholder="your old password...">
-                              <label for="newPassword">New Password:</label>
-                              <input type="password" name="newPassword" id="newPassword" placeholder="your new password...">
-                              <label for="confirmPassword">Confirm New Password:</label>
-                              <input type="password" name="confirmPassword" id="confirmPassword" placeholder="confirm your new password...">
-                              <input class="custom-button" type="submit" name="submit" value="Update">
+                          <form action="/tenant/send-message" method="post">
+                              <label for="tenantMessage">Message:</label>
+                              <textarea name="tenantMessage" id="tenantMessage" cols="30" rows="10"></textarea>
+                              <input class="custom-button" type="submit" name="submit" value="Send Message">
                           </form> 
                     </div>
                     </div>

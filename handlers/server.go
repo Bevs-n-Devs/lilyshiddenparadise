@@ -41,12 +41,16 @@ func StartHTTPServer() {
 	http.HandleFunc("/landlord/dashboard/tenants", LandlordDashboardTenants)
 	http.HandleFunc("/landlord/dashboard/tenant-applications", LandlordTenantApplications)
 	http.HandleFunc("/landlord/dashboard/manage-applications", LandlordManageApplications)
+	// http.HandleFunc("/landlord/dashboard/messages", LandlordMessages)
+	// http.HandleFunc("/landlord/send-message", SendMessageToTenant)
 
 	// protected tenant routes
 	http.HandleFunc("/tenant/dashboard", TenantDashboard)
 	http.HandleFunc("/logout-tenant", LogoutTenant)
 	http.HandleFunc("/tenant/dashboard/account", TenantAccount)
 	http.HandleFunc("/tenant/update-password", UpdateTenantPassword)
+	http.HandleFunc("/tenant/dashboard/messages", TenantMessages)
+	http.HandleFunc("/tenant/send-message", SendMessageToLandlord)
 
 	// initialise port for application
 	httpPort := os.Getenv("PORT") // attempt to get port from hosting platform
