@@ -473,7 +473,7 @@ func SendMessageToLandlordSessionCookie(w http.ResponseWriter, sessionToken stri
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
 		Value:    sessionToken,
-		Expires:  expiryTime,
+		Expires:  expiryTime.Add(3 * time.Minute),
 		HttpOnly: true,
 		Path:     "/tenant/dashboard/messages",
 		SameSite: http.SameSiteStrictMode,
@@ -485,7 +485,7 @@ func SendMessageToLandlordCSRFTokenCookie(w http.ResponseWriter, csrfToken strin
 	http.SetCookie(w, &http.Cookie{
 		Name:     "csrf_token",
 		Value:    csrfToken,
-		Expires:  expiryTime,
+		Expires:  expiryTime.Add(3 * time.Minute),
 		HttpOnly: false,
 		Path:     "/tenant/dashboard/messages",
 		SameSite: http.SameSiteStrictMode,
@@ -497,7 +497,7 @@ func SubmitMessageToLandlordSessionCookie(w http.ResponseWriter, sessionToken st
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
 		Value:    sessionToken,
-		Expires:  expiryTime.Add(2 * time.Minute),
+		Expires:  expiryTime,
 		HttpOnly: true,
 		Path:     "/tenant/send-message",
 		SameSite: http.SameSiteStrictMode,
@@ -509,7 +509,7 @@ func SubmitMessageToLandlordCSRFTokenCookie(w http.ResponseWriter, csrfToken str
 	http.SetCookie(w, &http.Cookie{
 		Name:     "csrf_token",
 		Value:    csrfToken,
-		Expires:  expiryTime.Add(2 * time.Minute),
+		Expires:  expiryTime,
 		HttpOnly: false,
 		Path:     "/tenant/send-message",
 		SameSite: http.SameSiteStrictMode,
