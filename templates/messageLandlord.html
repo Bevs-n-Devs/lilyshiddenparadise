@@ -128,7 +128,7 @@
                     
                     <div class="col-md-6">
                     <div class="email-wrapper">
-                        <h1>Update Your Password</h1>
+                        <h1>Send Message</h1>
                         <div class="section-snippet hidden-xs">
                           <span class="snippet-heading">View Dashboard</span>
                           <span style="color: #FB0097;">Click <a href="/tenant/dashboard" style="color:#14962c;">here</a> to go back to your dashboard.</span>  
@@ -136,7 +136,7 @@
 
                         <div class="section-snippet hidden-xs">
                           <span class="snippet-heading">Message Landlord</span>
-                          <span style="color: #FB0097;">Click <a href="" style="color:#14962c;">here</a> to view or send messages to your landlord.</span>  
+                          <span style="color: #FB0097;">Click <a href="/tenant/dashboard/messages" style="color:#14962c;">here</a> to view or send messages to your landlord.</span>  
                         </div>
 
                         <div class="section-snippet hidden-xs">
@@ -149,7 +149,7 @@
                         <div class="form-wrapper">
                           <form action="/tenant/send-message" method="post">
                               <label for="tenantMessage">Message:</label>
-                              <textarea name="tenantMessage" id="tenantMessage" cols="30" rows="10"></textarea>
+                              <textarea name="tenantMessage" id="tenantMessage" cols="30" rows="10" aria-required="true"></textarea>
                               <input class="custom-button" type="submit" name="submit" value="Send Message">
                           </form> 
                     </div>

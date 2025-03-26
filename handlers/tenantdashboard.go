@@ -87,7 +87,7 @@ func TenantDashboard(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+session+cookie", http.StatusInternalServerError)
 		return
 	}
-	createSendLandlordMessageCsrfCookie := middleware.SendMessageToLandlordCSRFTokenCookie(w, newSessionToken, newExpiryTime)
+	createSendLandlordMessageCsrfCookie := middleware.SendMessageToLandlordCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
 	if !createSendLandlordMessageCsrfCookie {
 		logs.Logs(logErr, "Failed to create CSRF cookie. Redirecting back to tenant login page...")
 		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+CSRF+cookie", http.StatusInternalServerError)

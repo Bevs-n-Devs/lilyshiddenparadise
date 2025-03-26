@@ -7,6 +7,8 @@ const (
 	logInfo   = 1
 	logWarn   = 2
 	logErr    = 3
+	LANDLORD  = "landlord"
+	TENANT    = "tenant"
 )
 
 var (

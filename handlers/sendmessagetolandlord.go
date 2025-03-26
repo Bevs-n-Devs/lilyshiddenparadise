@@ -3,8 +3,10 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/db"
+	"github.com/Bevs-n-Devs/lilyshiddenparadise/env"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/middleware"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
@@ -50,36 +52,7 @@ func SendMessageToLandlord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO! Set cookies for each available page via tenant dashboard page
-
-	// set session cookies for tenant dashboard
-	createTenantDashboardSessionCookie := middleware.TenantDashboardSessionCookie(w, newSessionToken, newExpiryTime)
-	if !createTenantDashboardSessionCookie {
-		logs.Logs(logErr, "Failed to create session cookie. Redirecting back to tenant login page...")
-		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+session+cookie", http.StatusInternalServerError)
-		return
-	}
-	createTenantDashboardCsrfCookie := middleware.TenantDashboardCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
-	if !createTenantDashboardCsrfCookie {
-		logs.Logs(logErr, "Failed to create CSRF cookie. Redirecting back to tenant login page...")
-		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+CSRF+cookie", http.StatusInternalServerError)
-		return
-	}
-
-	// set cookie for tenant account page
-	createTenantAccountSessionCookie := middleware.TenantDashboardAccountSessionCookie(w, newSessionToken, newExpiryTime)
-	if !createTenantAccountSessionCookie {
-		logs.Logs(logErr, "Failed to create session cookie. Redirecting back to tenant login page...")
-		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+session+cookie", http.StatusInternalServerError)
-		return
-	}
-	createTenantAccountCsrfCookie := middleware.TenantDashboardAccountCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
-	if !createTenantAccountCsrfCookie {
-		logs.Logs(logErr, "Failed to create CSRF cookie. Redirecting back to tenant login page...")
-		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+CSRF+cookie", http.StatusInternalServerError)
-		return
-	}
-
+	// TODO! Set cookies for each available page
 	// set session cookies to send message to landlord
 	createSendLandlordMessageSessionCookie := middleware.SendMessageToLandlordSessionCookie(w, newSessionToken, newExpiryTime)
 	if !createSendLandlordMessageSessionCookie {
@@ -87,44 +60,68 @@ func SendMessageToLandlord(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+session+cookie", http.StatusInternalServerError)
 		return
 	}
-	createSendLandlordMessageCsrfCookie := middleware.SendMessageToLandlordCSRFTokenCookie(w, newSessionToken, newExpiryTime)
+	createSendLandlordMessageCsrfCookie := middleware.SendMessageToLandlordCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
 	if !createSendLandlordMessageCsrfCookie {
 		logs.Logs(logErr, "Failed to create CSRF cookie. Redirecting back to tenant login page...")
 		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+CSRF+cookie", http.StatusInternalServerError)
 		return
 	}
 
-	// set session to submit message route
-	createSubmitMessageToLandlordSessionCookie := middleware.SubmitMessageToLandlordSessionCookie(w, newSessionToken, newExpiryTime)
-	if !createSubmitMessageToLandlordSessionCookie {
-		logs.Logs(logErr, "Failed to create session cookie. Redirecting back to tenant login page...")
-		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+session+cookie", http.StatusInternalServerError)
-		return
-	}
-	createSubmitMessageToLandlordCsrfTokenCookie := middleware.SubmitMessageToLandlordCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
-	if !createSubmitMessageToLandlordCsrfTokenCookie {
-		logs.Logs(logErr, "Failed to create CSRF cookie. Redirecting back to tenant login page...")
-		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+CSRF+cookie", http.StatusInternalServerError)
-		return
-	}
-
-	// set session cookies to logout tenant
-	createTenantLogoutSessionCookie := middleware.LogoutTenantSessionCookie(w, newSessionToken)
-	if !createTenantLogoutSessionCookie {
-		logs.Logs(logErr, "Failed to create session cookie. Redirecting back to tenant login page...")
-		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+session+cookie", http.StatusInternalServerError)
-		return
-	}
-	createTenantLogoutCsrfCookie := middleware.LogoutTenantCSRFTokenCookie(w, newCsrfToken)
-	if !createTenantLogoutCsrfCookie {
-		logs.Logs(logErr, "Failed to create CSRF cookie. Redirecting back to tenant login page...")
-		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+create+CSRF+cookie", http.StatusInternalServerError)
-		return
-	}
-
-	err = Templates.ExecuteTemplate(w, "messageLandlord.html", nil)
+	// TODO: get form data and send message to landlord via email => ID
+	// parse form data
+	err = r.ParseForm()
 	if err != nil {
-		logs.Logs(logErr, fmt.Sprintf("Unable to load message landlord: %s", err.Error()))
-		http.Error(w, fmt.Sprintf("Unable to load message landlord: %s", err.Error()), http.StatusInternalServerError)
+		logs.Logs(logErr, fmt.Sprintf("Error parsing form data: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Error parsing form data: %s", err.Error()), http.StatusInternalServerError)
+		return
 	}
+
+	// extract tenant message from form
+	tenantMessage := r.FormValue("tenantMessage")
+
+	// TODO: get landlord ID via landlord email
+	// get landlord email via environment variable
+	if os.Getenv("LANDLORD_EMAIL") == "" {
+		logs.Logs(logWarn, "Could not get landlord email from hosting platform. Loading from .env file...")
+		err := env.LoadEnv("env/.env")
+		if err != nil {
+			logs.Logs(logErr, fmt.Sprintf("Could not load environment variables from .env file: %s", err.Error()))
+			http.Error(w, fmt.Sprintf("Could not load environment variables from .env file: %s", err.Error()), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	landlordEmail := os.Getenv("LANDLORD_EMAIL")
+	if landlordEmail == "" {
+		logs.Logs(logErr, "Landlord email is empty!")
+		http.Error(w, "Landlord email is empty!", http.StatusInternalServerError)
+		return
+	}
+
+	// get landlord id
+	landlordId, err := db.GetLandlordIdByEmail(landlordEmail)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to get landlord ID: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to get landlord ID: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	// TODO: get tenant ID via tenant email
+	tenantId, err := db.GetTenantIdByEmail(tenantEmail)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to get tenant ID: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to get tenant ID: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	// TODO: save message to database [lhp_messages table]
+	err = db.SendMessage(tenantId, TENANT, landlordId, LANDLORD, tenantMessage)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to send message to landlord: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to send message to landlord: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	// TODO: redirect backl to messages page if message sent successfully
+	http.Redirect(w, r, "/tenant/dashboard/messages", http.StatusSeeOther)
 }

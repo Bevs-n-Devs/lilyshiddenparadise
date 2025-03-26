@@ -705,6 +705,47 @@ func GetTenantIdByEmail(email string) (int, error) {
 	return tenantId, nil
 }
 
+func SendMessage(senderId int, senderType string, receiverID int, receiverType string, message string) error {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return errors.New("database connection is not initialized")
+	}
+
+	encryptMessage, err := utils.Encrypt([]byte(message))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt message: %s", err.Error()))
+		return err
+	}
+
+	query := `
+	INSERT INTO lhp_messages 
+		(
+			sender_id, 
+			sender_type, 
+			receiver_id, 
+			receiver_type, 
+			encrypt_message, 
+			sent_at
+		)
+	VALUES ($1, $2, $3, $4, $5, NOW());
+	`
+	_, err = db.Exec(
+		query,
+		senderId,
+		senderType,
+		receiverID,
+		receiverType,
+		encryptMessage,
+	)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to send message: %s", err.Error()))
+		return err
+	}
+
+	logs.Logs(logDb, fmt.Sprintf("Message from %s successfully sent to %s", senderType, receiverType))
+	return nil
+}
+
 /*
 SaveTenantApplicationForm saves a tenant application form to the database.
 
