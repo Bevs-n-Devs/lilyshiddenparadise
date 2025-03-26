@@ -105,6 +105,29 @@ func CreateNewLandlord(landlordEmail, landlordPassword string) error {
 	return nil
 }
 
+func GetTenantNameByEmail(email string) (string, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is empty!")
+		return "", errors.New("database connection not established")
+	}
+
+	hashEmail := utils.HashData(email)
+
+	var encryptedTenantName string
+	query := `
+	SELECT encrypt_full_name
+	FROM lhp_tenant_application 
+	WHERE hash_email = $1;
+	`
+	err := db.QueryRow(query, hashEmail).Scan(&encryptedTenantName)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Error getting tenant name: %s", err.Error()))
+		return "", err
+	}
+
+	return encryptedTenantName, nil
+}
+
 /*
 CreateNewTenant creates a new tenant record in the database.
 
@@ -162,6 +185,13 @@ func CreateNewTenant(tenantEmail, tenantPassword, roomType, moveInDate, rentDue,
 		return err
 	}
 
+	// TODO! get encrypted tenant name via tenantEmail
+	encryptedTenantName, err := GetTenantNameByEmail(tenantEmail)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to get tenant name: %s", err.Error()))
+		return err
+	}
+
 	// hash & encrypt identifiers
 	hashEmail := utils.HashData(tenantEmail)
 	hashPassword := utils.HashData(tenantPassword)
@@ -202,6 +232,7 @@ func CreateNewTenant(tenantEmail, tenantPassword, roomType, moveInDate, rentDue,
 		return err
 	}
 
+	// TODO! add ecrypt_tenant_name at end of query
 	query := `
 	INSERT INTO lhp_tenants (
 		landlord_id,
@@ -214,11 +245,12 @@ func CreateNewTenant(tenantEmail, tenantPassword, roomType, moveInDate, rentDue,
 		encrypt_move_in_date,
 		encrypt_rent_due,
 		encrypt_monthly_rent,
-		currency
+		currency,
+		encrypt_tenant_name,
 	)
-	VALUES ($1, $2, $3, NOW(), $4, $5, $6, $7, $8, $9, $10);
+	VALUES ($1, $2, $3, NOW(), $4, $5, $6, $7, $8, $9, $10, $11);
 	`
-	_, err = db.Exec(query, landlordId, hashEmail, hashPassword, encrypt_email, encrypt_password, encrypt_room_type, encrypt_move_in_date, encrypt_rent_due, encrypt_monthly_rent, currency)
+	_, err = db.Exec(query, landlordId, hashEmail, hashPassword, encrypt_email, encrypt_password, encrypt_room_type, encrypt_move_in_date, encrypt_rent_due, encrypt_monthly_rent, currency, encryptedTenantName)
 	if err != nil {
 		logs.Logs(logDbErr, fmt.Sprintf("Failed to create new tenant: %s", err.Error()))
 		return err
