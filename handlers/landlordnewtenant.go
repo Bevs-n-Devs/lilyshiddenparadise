@@ -92,6 +92,20 @@ func LandlordNewTenant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// set cookies to submit new tenant handler
+	createSubmitNewTenantSessionCookie := middleware.LandlordSubmitNewTenantSessionCookie(w, newSessionToken, newExpiryTime)
+	if !createSubmitNewTenantSessionCookie {
+		logs.Logs(logErr, "Failed to create session cookie for landlord submit new tenant page. Redirecting back to login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+session+cookie", http.StatusSeeOther)
+		return
+	}
+	createSubmitNewTenantCSRFTokenCookie := middleware.LandlordSubmitNewTenantCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
+	if !createSubmitNewTenantCSRFTokenCookie {
+		logs.Logs(logErr, "Failed to create CSRF token cookie for landlord submit new tenant page. Redirecting back to login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+CSRF+token+cookie", http.StatusSeeOther)
+		return
+	}
+
 	// set cookie to logout landlord
 	logoutSessionCookie := middleware.LogoutLandlordSessionCookie(w, newSessionToken)
 	if !logoutSessionCookie {

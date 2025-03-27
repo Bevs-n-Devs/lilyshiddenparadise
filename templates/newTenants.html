@@ -134,8 +134,8 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-wrapper">
-                          <form action="" method="post">
-                              <label for="teanntFullName">Tenant Full Name:</label>
+                          <form action="/tenant/dashboard/new-tenant/submit" method="post">
+                              <label for="tenantFullName">Tenant Full Name:</label>
                               <input type="text" name="tenantFullName" id="tenantFullName" placeholder="tenant full name" required>
                               <label for="passportNumber">Passport / ID:</label>
                               <input type="number" name="passportNumber" id="passportNumber" placeholder="tenant passport or ID number" required>
@@ -157,7 +157,7 @@
                               <input type="date" name="rentDue" id="rentDue" required>
                               <label for="monthlyRent">Monthly Rent:</label>
                               <input type="number" name="monthlyRent" id="monthlyRent" placeholder="monthly rent" required>
-                              <label for="currrency">Currency:</label>
+                              <label for="currency">Currency:</label>
                               <select name="currency" id="currency" required>
                                 <option value="">Please Select</option>
                                 <option value="Bajan Dollars">Bajan Dollars</option>

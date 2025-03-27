@@ -185,7 +185,7 @@ func CreateNewTenant(tenantEmail, tenantPassword, roomType, moveInDate, rentDue,
 		return err
 	}
 
-	// TODO! get encrypted tenant name via tenantEmail
+	// get encrypted tenant name via tenantEmail
 	encryptedTenantName, err := GetTenantNameByEmail(tenantEmail)
 	if err != nil {
 		logs.Logs(logDbErr, fmt.Sprintf("Failed to get tenant name: %s", err.Error()))
@@ -232,7 +232,6 @@ func CreateNewTenant(tenantEmail, tenantPassword, roomType, moveInDate, rentDue,
 		return err
 	}
 
-	// TODO! add ecrypt_tenant_name at end of query
 	query := `
 	INSERT INTO lhp_tenants (
 		landlord_id,
@@ -251,6 +250,109 @@ func CreateNewTenant(tenantEmail, tenantPassword, roomType, moveInDate, rentDue,
 	VALUES ($1, $2, $3, NOW(), $4, $5, $6, $7, $8, $9, $10, $11);
 	`
 	_, err = db.Exec(query, landlordId, hashEmail, hashPassword, encrypt_email, encrypt_password, encrypt_room_type, encrypt_move_in_date, encrypt_rent_due, encrypt_monthly_rent, currency, encryptedTenantName)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to create new tenant: %s", err.Error()))
+		return err
+	}
+	return nil
+}
+
+func ManuallyCreateNewTenant(tenantFullName, tenantPassportID, tenantEmail, roomType, moveInDate, rentDue, monthlyRent, currency string) error {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return errors.New("database connection is not initialized")
+	}
+
+	// get landlord email via environment variable
+	if os.Getenv("LANDLORD_EMAIL") == "" {
+		logs.Logs(logWarning, "Could not get landlord email from hosting platform. Loading from .env file...")
+		err := env.LoadEnv("env/.env")
+		if err != nil {
+			logs.Logs(logErr, fmt.Sprintf("Could not load environment variables from .env file: %s", err.Error()))
+			return err
+		}
+	}
+
+	landlordEmail := os.Getenv("LANDLORD_EMAIL")
+	if landlordEmail == "" {
+		logs.Logs(logDbErr, "Landlord email is empty!")
+		return errors.New("landlord email is empty")
+	}
+
+	// get landlord id
+	landlordId, err := GetLandlordIdByEmail(landlordEmail)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to get landlord ID: %s", err.Error()))
+		return err
+	}
+
+	// hash & encrypt identifiers
+	hashEmail, hashPassword, err := utils.GenerateTenantUsernamePassportNumberAndPassword(tenantEmail, tenantPassportID)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to generate hash of tenant username & password: %s", err.Error()))
+		return err
+	}
+
+	encryptName, err := utils.Encrypt([]byte(tenantFullName))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt tenant name: %s", err.Error()))
+		return err
+	}
+
+	encryptEmail, err := utils.Encrypt([]byte(tenantEmail))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt email: %s", err.Error()))
+		return err
+	}
+
+	encryptPassword, err := utils.Encrypt([]byte(tenantPassportID))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt password: %s", err.Error()))
+		return err
+	}
+
+	encryptRoomType, err := utils.Encrypt([]byte(roomType))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt room type: %s", err.Error()))
+		return err
+	}
+
+	encryptMoveInDate, err := utils.Encrypt([]byte(moveInDate))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt move in date: %s", err.Error()))
+		return err
+	}
+
+	encryptRentDue, err := utils.Encrypt([]byte(rentDue))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt rent due: %s", err.Error()))
+		return err
+	}
+
+	encryptMonthlyRent, err := utils.Encrypt([]byte(monthlyRent))
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt monthly rent: %s", err.Error()))
+		return err
+	}
+
+	query := `
+	INSERT INTO lhp_tenants (
+		landlord_id,
+		hash_email,
+		hash_password,
+		encrypt_tenant_name,
+		encrypt_email,
+		encrypt_password,
+		encrypt_room_type,
+		encrypt_move_in_date,
+		encrypt_rent_due,
+		encrypt_monthly_rent,
+		currency,
+		created_at,
+	)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW());
+	`
+	_, err = db.Exec(query, landlordId, hashEmail, hashPassword, encryptName, encryptEmail, encryptPassword, encryptRoomType, encryptMoveInDate, encryptRentDue, encryptMonthlyRent, currency)
 	if err != nil {
 		logs.Logs(logDbErr, fmt.Sprintf("Failed to create new tenant: %s", err.Error()))
 		return err
