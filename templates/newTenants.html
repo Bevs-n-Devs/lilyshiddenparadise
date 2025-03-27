@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en-US"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en-US"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en">
+
+<head>
+
+    <!--meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--meta tags ends-->
+
+    <title>Create New Tenant | Landlord Dashboard</title>
+
+    <!--- Links to google fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,800%7cRoboto+Mono:400,700%7cMerriweather:300%7cAbril+Fatface'
+          rel='stylesheet'>
+    <!-- Links to fonts ends -->
+
+    <!-- Bootstrap stylesheet -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Icons -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+    <!-- Popup Images -->
+    <link rel="stylesheet" type="text/css" href="/static/css/magnific-popup.css">
+
+    <!-- css animation -->
+    <link rel="stylesheet" type="text/css" href="/static/css/animate.css">
+
+    <!-- custom stylesheets -->
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+  
+
+
+</head>
+
+<body>
+
+<!-- Start: Preloader section -->
+<div id="loader-wrapper">
+    <div id="loader"></div>
+</div>
+<!-- End: Preloader section -->
+
+<!-- DOCUMENT WRAPPER STARTS -->
+    <main>
+
+        <!-- MAIN HEADER STARTS-->
+            <header id="header">
+
+            <!-- TOP NAVIGATION -->
+            <nav class="top-navigation-bar navbar navbar-default navbar-fixed-top">
+                <div class="container">
+                <div class="row">
+                <div class="col-md-12">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" 
+                                data-toggle="collapse" data-target="#top-navigation-bar" 
+                                aria-expanded="false">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/landlord/dashboard">Dashboard</a>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="top-navigation-bar">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="active"><a href="/landlord/dashboard/tenant-applications">Applications</a></li>
+                            <li><a href="/landlord/dashboard/tenant-applications#manage-applications">Manage Applications</a></li>
+                            <li><a href="/logout-landlord">Logout</a></li>                            
+                        </ul>
+                    </div>
+                    <!-- /.navbar-collapse -->
+                    </div>
+                    </div>
+                </div>
+                <!-- /.container-->
+            </nav>
+            <!-- TOP NAVIGATION ENDS -->
+
+        </header>
+        
+        <!-- main header ends-->
+        <section id="address" class="address page-top">
+            <div class="container">
+                <div class="row">
+                    
+                    <div class="col-md-12">
+                        <div class="address-wrapper wow fadeInUp" data-wow-delay="0.3s">
+                            <h1>Manual Applications</h1>
+                            <p>
+                                If a tenant has submitted an application by hand, you can easily add them to the system here.
+                                <br>
+                                Once the form below has been completed, our system will take care of the rest!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="manage-applications" class="email-us page">
+            <div class="container wow fadeInUp" data-wow-delay="0.3s">
+                <div class="row">
+                    
+                    <div class="col-md-6">
+                    <div class="email-wrapper">
+                        <h1>Create New Tenant</h1>
+                        <div class="section-snippet hidden-xs">
+                          <span class="snippet-heading">Creating A New Tenant Account</span>
+                          <span style="color: #FB0097;">Create a username for the tenant using their email address</span>  
+                        </div>
+                        <div class="section-snippet hidden-xs">
+                            <span class="snippet-heading">Secure Password Generation</span>
+                            <span style="color: #FB0097;">Generate a secure password for the tenant using their passport or ID number and random characters</span>
+                        </div>
+                        <div class="section-snippet hidden-xs">
+                            <span class="snippet-heading">Tenant Notification</span>
+                            <span style="color: #FB0097;">Send a confirmation email to the tenant, notifying them that their application has been successful</span>
+                        </div>
+                        <div class="section-snippet hidden-xs">
+                            <span class="snippet-heading">Landlord Notification</span>
+                            <span style="color: #FB0097;">Notify the landlord via email, keeping them informed of the new tenant's addition</span>
+                        </div>
+                     </div>  
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-wrapper">
+                          <form action="" method="post">
+                              <label for="teanntFullName">Tenant Full Name:</label>
+                              <input type="text" name="tenantFullName" id="tenantFullName" placeholder="tenant full name" required>
+                              <label for="passportNumber">Passport / ID:</label>
+                              <input type="number" name="passportNumber" id="passportNumber" placeholder="tenant passport or ID number" required>
+                              <label for="tenantEmail">Tenant Email:</label>
+                              <input type="email" name="tenantEmail" id="tenantEmail" placeholder="tenant email address" required>
+                              <p>Please complete the following:</p>
+                              <label for="roomType">Room Type:</label>
+                              <select name="roomType" id="roomType" required>
+                                <option value="">Please Select</option>
+                                <option value="Single">Single Room</option>
+                                <option value="Double">Double Room</option>
+                                <option value="Ensuite">Ensuite</option>
+                                <option value="Self-contained">Self Contained</option>
+                              </select>
+                              <label for="moveInDate">Move In Date:</label>
+                              <input type="date" name="moveInDate" id="moveInDate" required>
+                              <label for="rentDue">Rent Due:</label>
+                              <p style="color: #FB0097;">Choose the date when rent is due each month (note: this date will recur on the same day every month)</p>
+                              <input type="date" name="rentDue" id="rentDue" required>
+                              <label for="monthlyRent">Monthly Rent:</label>
+                              <input type="number" name="monthlyRent" id="monthlyRent" placeholder="monthly rent" required>
+                              <label for="currrency">Currency:</label>
+                              <select name="currency" id="currency" required>
+                                <option value="">Please Select</option>
+                                <option value="Bajan Dollars">Bajan Dollars</option>
+                                <option value="US Dolars">US Dolars</option>
+                                <option value="British Pounds">Britsh Pounds</option>
+                                <option value="Euros">Euro</option>
+                              </select>
+                              <input class="custom-button" type="submit" name="submit" value="Create Tenant">
+                          </form> 
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+         <!-- footer section starts -->
+        <footer id="footer" class="footer">
+            <div class="container wow fadeInUp">
+                <div class="row">
+                    <div class="footer-wrapper clearfix">
+                    <div class="col-md-6 footer-left">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="footer-link footer-link-1">
+                                    <h4>Create Free Account</h4>
+                                    <ul>
+                                        <li><a href="#">View courses</a></li>
+                                        <li><a href="#">Discuss</a></li>
+                                        <li><a href="#">Suggest course</a></li>
+                                        <li><a href="#">View courses</a></li>
+                                        <li><a href="#">Discuss</a></li>
+                                        <li><a href="#">Suggest course</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="footer-link footer-link-2">
+                                    <h4>Create Free Account</h4>
+                                    <ul>
+                                        <li><a href="#">View courses</a></li>
+                                        <li><a href="#">Discuss</a></li>
+                                        <li><a href="#">Suggest course</a></li>
+                                        <li><a href="#">View courses</a></li>
+                                        <li><a href="#">Discuss</a></li>
+                                        <li><a href="#">Suggest course</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5 col-md-offset-1 footer-text">
+                        <p>
+                            By submitting information through this platform, you acknowledge and agree that Akoto Tech 
+                            may securely store and utilize your data for educational, analytical, and promotional purposes, 
+                            as well as to enhance its services. Your data may also be used for internal evaluations, 
+                            aggregated research, or other purposes deemed appropriate by Akoto Tech.
+                        </p>
+                        <span>
+                            &copy; 2025 Created By 
+                            <a href="https://akototech.org" 
+                               target="_blank" 
+                               style="color: #FB0097;" 
+                               rel="noopener noreferrer">
+                                Akoto Tech
+                            </a>
+                        </span>
+                    </div>
+                    </div>
+                </div><!-- End: .row -->
+            </div><!-- End: .container-->
+        </footer>
+        <!-- footer section ends -->
+
+    </main>
+<!-- DOCUMENT WRAPPER ENDS -->
+
+
+
+<!-- SCRIPTS -->
+
+    <!-- jQuery (necessary for all the plugins) -->
+    <script src="/static/js/jquery-1.11.2.min.js"></script>
+
+    <script src="http://maps.google.com/maps/api/js"></script>
+    <script src="/static/js/gmaps.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.magnific-popup.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.easing.min.js"></script>
+    <script type="text/javascript" src="/static/js/wow.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.validate.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/main.js"></script>
+
+<!-- SCRIPTS ENDS -->
+</body>
+
+</html>
+
