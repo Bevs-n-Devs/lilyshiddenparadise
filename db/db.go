@@ -360,6 +360,28 @@ func ManuallyCreateNewTenant(tenantFullName, tenantPassportID, tenantEmail, room
 	return nil
 }
 
+func GetEncryptedPasswordByTenantEmail(email string) (string, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return "", errors.New("database connection is not initialized")
+	}
+
+	hashEmail := utils.HashData(email)
+	var encryptedPassword string
+
+	query := `
+	SELECT encrypt_password 
+	FROM lhp_tenants 
+	WHERE hash_email=$1;
+	`
+	err := db.QueryRow(query, hashEmail).Scan(&encryptedPassword)
+	if err != nil {
+		return "", err
+	}
+
+	return encryptedPassword, nil
+}
+
 /*
 AuthenticateLandlord checks if the provided email and password match the stored credentials.
 

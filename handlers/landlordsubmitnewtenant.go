@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/db"
+	"github.com/Bevs-n-Devs/lilyshiddenparadise/email"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/middleware"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
@@ -146,9 +147,35 @@ func LandlordSubmitNewTenant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: send email to tenant as confirmation
+	// get tenant's encrypted password and decrypt it for email notification
+	tenantPassword, err := db.GetEncryptedPasswordByTenantEmail(tenantEmail)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to get encrypted password by tenant email: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to get encrypted password by tenant email: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+	decryptPassword, err := utils.Decrypt([]byte(tenantPassword))
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to decrypt tenant password: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to decrypt tenant password: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
 
-	// TODO: send email to landlord as confirmation
+	// send email to tenant as confirmation
+	err = email.NotifyTenantNewAccount(tenantEmail, string(decryptPassword), roomType, moveInDate, rentDue, monthlyRent, currency)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to send email to tenant: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to send email to tenant: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	// send email to landlord as confirmation
+	err = email.NotifyLandlordNewAccount(tenantEmail, string(decryptPassword), roomType, moveInDate, rentDue, monthlyRent, currency)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to send email to landlord: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to send email to landlord: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
 
 	// redirect to landlord dashboard tenants page
 	http.Redirect(w, r, "/landlord/dashboard/tenants", http.StatusSeeOther)

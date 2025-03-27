@@ -144,7 +144,7 @@ func NotifyTenantNewAccount(tenantUsername, tenantPassword, roomType, moveInDate
 	// create email message
 	subject := "Tenant Application Approved"
 	body := fmt.Sprintf(`
-Your application has been approved!
+Congratulations! Your application has been approved!
 
 Here is your account information:
 	Username: %s
@@ -155,7 +155,7 @@ YOUR ROOM DETAILS:
 	Room Type: %s
 	Move-in Date: %s
 	Rent Due: %s (and same date every month thereafter)
-	Monthly Rent: %s %s
+	Monthly Rent: %s %s per month
 
 Please login to the tenant dashboard to view your account details.
 	`, tenantUsername, tenantPassword, roomType, moveInDate, rentDue, monthlyRent, currency)
@@ -210,7 +210,7 @@ func NotifyLandlordNewAccount(tenantUsername, tenantPassword, roomType, moveInDa
 	Room Type: %s
 	Move-in Date: %s
 	Rent Due: %s (and same date every month thereafter)
-	Monthly Rent: %s %s
+	Monthly Rent: %s %s per month
 
 	Please login to the landlord dashboard to view more details.
 	`, tenantUsername, tenantPassword, roomType, moveInDate, rentDue, monthlyRent, currency)
