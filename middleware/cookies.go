@@ -201,7 +201,7 @@ func LandlordNewTenantSessionCookie(w http.ResponseWriter, sessionToken string, 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
 		Value:    sessionToken,
-		Expires:  expiryTime,
+		Expires:  expiryTime.Add(5 * time.Minute),
 		HttpOnly: true,
 		Path:     "/landlord/dashboard/new-tenant",
 		SameSite: http.SameSiteStrictMode,
@@ -213,7 +213,7 @@ func LandlordNewTenantCSRFTokenCookie(w http.ResponseWriter, csrfToken string, e
 	http.SetCookie(w, &http.Cookie{
 		Name:     "csrf_token",
 		Value:    csrfToken,
-		Expires:  expiryTime,
+		Expires:  expiryTime.Add(5 * time.Minute),
 		HttpOnly: false,
 		Path:     "/landlord/dashboard/new-tenant",
 		SameSite: http.SameSiteStrictMode,

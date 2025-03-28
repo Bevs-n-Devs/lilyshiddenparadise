@@ -197,7 +197,7 @@ func NotifyLandlordNewAccount(tenantUsername, tenantPassword, roomType, moveInDa
 	}
 
 	// create email message
-	subject := "Tenant Application Processing"
+	subject := "New Tenant Application Approved"
 	body := fmt.Sprintf(`
 	Your tenant's application has been approved!
 

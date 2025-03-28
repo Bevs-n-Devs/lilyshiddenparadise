@@ -178,5 +178,6 @@ func LandlordSubmitNewTenant(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// redirect to landlord dashboard tenants page
+	logs.Logs(logInfo, "New tenant successfully created. Redirecting to landlord dashboard tenants page")
 	http.Redirect(w, r, "/landlord/dashboard/tenants", http.StatusSeeOther)
 }

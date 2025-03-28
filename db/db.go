@@ -245,7 +245,7 @@ func CreateNewTenant(tenantEmail, tenantPassword, roomType, moveInDate, rentDue,
 		encrypt_rent_due,
 		encrypt_monthly_rent,
 		currency,
-		encrypt_tenant_name,
+		encrypt_tenant_name
 	)
 	VALUES ($1, $2, $3, NOW(), $4, $5, $6, $7, $8, $9, $10, $11);
 	`
@@ -287,11 +287,14 @@ func ManuallyCreateNewTenant(tenantFullName, tenantPassportID, tenantEmail, room
 	}
 
 	// hash & encrypt identifiers
-	hashEmail, hashPassword, err := utils.GenerateTenantUsernamePassportNumberAndPassword(tenantEmail, tenantPassportID)
+	tenantUsername, tenantPassword, err := utils.GenerateTenantUsernamePassportNumberAndPassword(tenantEmail, tenantPassportID)
 	if err != nil {
 		logs.Logs(logDbErr, fmt.Sprintf("Failed to generate hash of tenant username & password: %s", err.Error()))
 		return err
 	}
+
+	hashEmail := utils.HashData(tenantUsername)
+	hashPassword := utils.HashData(tenantPassword)
 
 	encryptName, err := utils.Encrypt([]byte(tenantFullName))
 	if err != nil {
@@ -305,7 +308,7 @@ func ManuallyCreateNewTenant(tenantFullName, tenantPassportID, tenantEmail, room
 		return err
 	}
 
-	encryptPassword, err := utils.Encrypt([]byte(tenantPassportID))
+	encryptPassword, err := utils.Encrypt([]byte(tenantPassword)) // important that we encrypt the newly generated password here
 	if err != nil {
 		logs.Logs(logDbErr, fmt.Sprintf("Failed to encrypt password: %s", err.Error()))
 		return err
@@ -348,7 +351,7 @@ func ManuallyCreateNewTenant(tenantFullName, tenantPassportID, tenantEmail, room
 		encrypt_rent_due,
 		encrypt_monthly_rent,
 		currency,
-		created_at,
+		created_at
 	)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW());
 	`
