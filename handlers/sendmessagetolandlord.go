@@ -122,6 +122,8 @@ func SendMessageToLandlord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO: send email notification to landlord
+
 	// TODO: redirect backl to messages page if message sent successfully
 	http.Redirect(w, r, "/tenant/dashboard/messages", http.StatusSeeOther)
 }
