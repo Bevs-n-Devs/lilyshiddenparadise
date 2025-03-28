@@ -852,10 +852,11 @@ func GetTenantIdByEmail(email string) (int, error) {
 	}
 
 	var tenantId int
+
 	query := `
 	SELECT id 
 	FROM lhp_tenants 
-	WHERE email=$1;
+	WHERE hash_email=$1;
 	`
 	err := db.QueryRow(query, email).Scan(&tenantId)
 	if err != nil {
