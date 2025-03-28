@@ -5,13 +5,14 @@ import (
 	"net/http"
 
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/db"
+	"github.com/Bevs-n-Devs/lilyshiddenparadise/email"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/middleware"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
 )
 
-func LandlordDashboardTenants(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+func LandlordSubmitNewTenant(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
 		logs.Logs(logErr, fmt.Sprintf("Invalid request method: %s. Redirecting back to landlord login page.", r.Method))
 		http.Redirect(w, r, "/login/landlord?badRequest=BAD+REQUEST+400:+Invalid+request+method", http.StatusBadRequest)
 		return
@@ -92,6 +93,20 @@ func LandlordDashboardTenants(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// set cookies to submit new tenant handler
+	createSubmitNewTenantSessionCookie := middleware.LandlordSubmitNewTenantSessionCookie(w, newSessionToken, newExpiryTime)
+	if !createSubmitNewTenantSessionCookie {
+		logs.Logs(logErr, "Failed to create session cookie for landlord submit new tenant page. Redirecting back to login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+session+cookie", http.StatusSeeOther)
+		return
+	}
+	createSubmitNewTenantCSRFTokenCookie := middleware.LandlordSubmitNewTenantCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
+	if !createSubmitNewTenantCSRFTokenCookie {
+		logs.Logs(logErr, "Failed to create CSRF token cookie for landlord submit new tenant page. Redirecting back to login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+CSRF+token+cookie", http.StatusSeeOther)
+		return
+	}
+
 	// set cookie to logout landlord
 	logoutSessionCookie := middleware.LogoutLandlordSessionCookie(w, newSessionToken)
 	if !logoutSessionCookie {
@@ -106,10 +121,63 @@ func LandlordDashboardTenants(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// direct user to protected landlord tenants page
-	err = Templates.ExecuteTemplate(w, "landlordDashboardTenants.html", nil)
+	// TODO: get data from form
+	err = r.ParseForm()
 	if err != nil {
-		logs.Logs(logErr, fmt.Sprintf("Unable to load landlord tenants: %s", err.Error()))
-		http.Error(w, fmt.Sprintf("Unable to load landlord tenants: %s", err.Error()), http.StatusInternalServerError)
+		logs.Logs(logErr, fmt.Sprintf("Error parsing form data: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Error parsing form data: %s", err.Error()), http.StatusInternalServerError)
+		return
 	}
+
+	// extract data from form
+	tenantFullName := r.FormValue("tenantFullName")
+	passportNumber := r.FormValue("passportNumber")
+	tenantEmail := r.FormValue("tenantEmail")
+	roomType := r.FormValue("roomType")
+	moveInDate := r.FormValue("moveInDate")
+	rentDue := r.FormValue("rentDue")
+	monthlyRent := r.FormValue("monthlyRent")
+	currency := r.FormValue("currency")
+
+	// TODO: save data to database
+	err = db.ManuallyCreateNewTenant(tenantFullName, passportNumber, tenantEmail, roomType, moveInDate, rentDue, monthlyRent, currency)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to manually create new tenant from landlord: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to manually create new tenant: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	// get tenant's encrypted password and decrypt it for email notification
+	tenantPassword, err := db.GetEncryptedPasswordByTenantEmail(tenantEmail)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to get encrypted password by tenant email: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to get encrypted password by tenant email: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+	decryptPassword, err := utils.Decrypt([]byte(tenantPassword))
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to decrypt tenant password: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to decrypt tenant password: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	// send email to tenant as confirmation
+	err = email.NotifyTenantNewAccount(tenantEmail, string(decryptPassword), roomType, moveInDate, rentDue, monthlyRent, currency)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to send email to tenant: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to send email to tenant: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	// send email to landlord as confirmation
+	err = email.NotifyLandlordNewAccount(tenantEmail, string(decryptPassword), roomType, moveInDate, rentDue, monthlyRent, currency)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to send email to landlord: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to send email to landlord: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	// redirect to landlord dashboard tenants page
+	logs.Logs(logInfo, "New tenant successfully created. Redirecting to landlord dashboard tenants page")
+	http.Redirect(w, r, "/landlord/dashboard/tenants", http.StatusSeeOther)
 }

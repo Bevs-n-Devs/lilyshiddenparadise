@@ -144,7 +144,7 @@ func NotifyTenantNewAccount(tenantUsername, tenantPassword, roomType, moveInDate
 	// create email message
 	subject := "Tenant Application Approved"
 	body := fmt.Sprintf(`
-Your application has been approved!
+Congratulations! Your application has been approved!
 
 Here is your account information:
 	Username: %s
@@ -155,7 +155,7 @@ YOUR ROOM DETAILS:
 	Room Type: %s
 	Move-in Date: %s
 	Rent Due: %s (and same date every month thereafter)
-	Monthly Rent: %s %s
+	Monthly Rent: %s %s per month
 
 Please login to the tenant dashboard to view your account details.
 	`, tenantUsername, tenantPassword, roomType, moveInDate, rentDue, monthlyRent, currency)
@@ -197,22 +197,22 @@ func NotifyLandlordNewAccount(tenantUsername, tenantPassword, roomType, moveInDa
 	}
 
 	// create email message
-	subject := "Tenant Application Processing"
+	subject := "New Tenant Application Approved"
 	body := fmt.Sprintf(`
-	Your tenant's application has been approved!
+Your tenant's application has been approved!
 
 	Here is your tenant's account information:
 	Username: %s
 	Password: %s
 
-	TENANT ROOM DETAILS:
+TENANT ROOM DETAILS:
 
 	Room Type: %s
 	Move-in Date: %s
 	Rent Due: %s (and same date every month thereafter)
-	Monthly Rent: %s %s
+	Monthly Rent: %s %s per month
 
-	Please login to the landlord dashboard to view more details.
+Please login to the landlord dashboard to view more details.
 	`, tenantUsername, tenantPassword, roomType, moveInDate, rentDue, monthlyRent, currency)
 
 	auth := smtp.PlainAuth("", smptUser, smptPassword, smptHost)
@@ -224,4 +224,42 @@ func NotifyLandlordNewAccount(tenantUsername, tenantPassword, roomType, moveInDa
 
 	logs.Logs(logInfo, "Email sent successfully. Landlord notified that new tenant account has been created.")
 	return nil
+}
+
+func NotifyLandlordNewMessageFromTenant(tenantName, landlordEmail, messageFromTenant string) error {
+	smptUser = os.Getenv("LHP_EMAIL")
+	smptPassword = os.Getenv("LHP_EMAIL_PASSWORD")
+	recipient = os.Getenv("NOTIFY_LANDLORD_EMAIL")
+	ccEmail = os.Getenv("LHP_EMAIL")
+
+	if smptUser == "" || smptPassword == "" || recipient == "" || ccEmail == "" {
+		logs.Logs(logErr, "Email credentials are empty!")
+		return fmt.Errorf("email credentials are empty")
+	}
+
+	if recipient == ccEmail {
+		logs.Logs(logWarn, "Primary and secondary email addresses are the same, skipping CC")
+		ccEmail = ""
+	}
+
+	subject := "New Message from " + tenantName
+	body := fmt.Sprintf(`
+You've received a new message from %s.
+
+MESAGE CONTENT:
+%s
+
+Log in to your landlord dashboard to respond.
+	`, tenantName, messageFromTenant)
+
+	auth := smtp.PlainAuth("", smptUser, smptPassword, smptHost)
+	err := smtp.SendMail(smptHost+":"+smptPort, auth, smptUser, []string{recipient, ccEmail}, []byte("Subject: "+subject+"\n\n"+body))
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to send email: %s", err.Error()))
+		return err
+	}
+
+	logs.Logs(logInfo, "Email sent successfully. Landlord notified of new message from tenant.")
+	return nil
+
 }

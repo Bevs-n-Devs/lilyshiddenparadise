@@ -10,7 +10,7 @@ import (
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
 )
 
-func LandlordDashboardTenants(w http.ResponseWriter, r *http.Request) {
+func LandlordNewTenant(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		logs.Logs(logErr, fmt.Sprintf("Invalid request method: %s. Redirecting back to landlord login page.", r.Method))
 		http.Redirect(w, r, "/login/landlord?badRequest=BAD+REQUEST+400:+Invalid+request+method", http.StatusBadRequest)
@@ -92,6 +92,20 @@ func LandlordDashboardTenants(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// set cookies to submit new tenant handler
+	createSubmitNewTenantSessionCookie := middleware.LandlordSubmitNewTenantSessionCookie(w, newSessionToken, newExpiryTime)
+	if !createSubmitNewTenantSessionCookie {
+		logs.Logs(logErr, "Failed to create session cookie for landlord submit new tenant page. Redirecting back to login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+session+cookie", http.StatusSeeOther)
+		return
+	}
+	createSubmitNewTenantCSRFTokenCookie := middleware.LandlordSubmitNewTenantCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
+	if !createSubmitNewTenantCSRFTokenCookie {
+		logs.Logs(logErr, "Failed to create CSRF token cookie for landlord submit new tenant page. Redirecting back to login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+CSRF+token+cookie", http.StatusSeeOther)
+		return
+	}
+
 	// set cookie to logout landlord
 	logoutSessionCookie := middleware.LogoutLandlordSessionCookie(w, newSessionToken)
 	if !logoutSessionCookie {
@@ -107,9 +121,9 @@ func LandlordDashboardTenants(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// direct user to protected landlord tenants page
-	err = Templates.ExecuteTemplate(w, "landlordDashboardTenants.html", nil)
+	err = Templates.ExecuteTemplate(w, "newTenants.html", nil)
 	if err != nil {
-		logs.Logs(logErr, fmt.Sprintf("Unable to load landlord tenants: %s", err.Error()))
-		http.Error(w, fmt.Sprintf("Unable to load landlord tenants: %s", err.Error()), http.StatusInternalServerError)
+		logs.Logs(logErr, fmt.Sprintf("Unable to load create new tenant page: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Unable to load create new tenant page: %s", err.Error()), http.StatusInternalServerError)
 	}
 }
