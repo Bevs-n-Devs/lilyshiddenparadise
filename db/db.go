@@ -128,6 +128,28 @@ func GetTenantNameByEmail(email string) (string, error) {
 	return encryptedTenantName, nil
 }
 
+func GetTenantNameByHashEmail(email string) (string, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is empty!")
+		return "", errors.New("database connection not established")
+	}
+
+	var encryptedTenantName string
+
+	query := `
+	SELECT encrypt_tenant_name
+	FROM lhp_tenants 
+	WHERE hash_email = $1;
+	`
+	err := db.QueryRow(query, email).Scan(&encryptedTenantName)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Error getting tenant name: %s", err.Error()))
+		return "", err
+	}
+
+	return encryptedTenantName, nil
+}
+
 /*
 CreateNewTenant creates a new tenant record in the database.
 

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/db"
+	"github.com/Bevs-n-Devs/lilyshiddenparadise/email"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/env"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/middleware"
@@ -123,6 +124,27 @@ func SendMessageToLandlord(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: send email notification to landlord
+	encryptedTeanntName, err := db.GetTenantNameByHashEmail(tenantEmail)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to get encrypted tenant name: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to get encrypted tenant name: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	tenantFullName, err := utils.Decrypt([]byte(encryptedTeanntName))
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to decrypt tenant name: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to decrypt tenant name: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	// send email to landlord
+	err = email.NotifyLandlordNewMessageFromTenant(string(tenantFullName), landlordEmail, tenantMessage)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to send email to landlord: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to send email to landlord: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
 
 	// TODO: redirect backl to messages page if message sent successfully
 	http.Redirect(w, r, "/tenant/dashboard/messages", http.StatusSeeOther)
