@@ -1598,3 +1598,42 @@ func GetTenantInformationByHashEmail(hashEmail string) (GetTenantInformation, er
 
 	return tenantInformation, nil
 }
+
+func GetTenantsByLandlordEmail(landlordEmail string) ([]LandlordTenants, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return nil, errors.New("database connection is not initialized")
+	}
+
+	landlordId, err := GetLandlordIdByEmail(landlordEmail)
+	if err != nil {
+		return nil, err
+	}
+
+	query := `
+	SELECT id, encrypt_tenant_name
+    FROM lhp_tenants
+    WHERE landlord_id = $1;
+	`
+	rows, err := db.Query(query, landlordId)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to get tenants: %s", err.Error()))
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tenants []LandlordTenants
+	for rows.Next() {
+		var tenant LandlordTenants
+		err := rows.Scan(
+			&tenant.ID,
+			&tenant.EncryptTenantName,
+		)
+		if err != nil {
+			logs.Logs(logDbErr, fmt.Sprintf("Failed to scan tenants: %s", err.Error()))
+			return nil, err
+		}
+		tenants = append(tenants, tenant)
+	}
+	return tenants, nil
+}

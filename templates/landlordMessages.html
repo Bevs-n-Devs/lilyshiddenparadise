@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--meta tags ends-->
 
-    <title>Create New Tenant | Landlord Dashboard</title>
+    <title>Message Dashboard | Lilys Hidden Paradise</title>
 
     <!--- Links to google fonts -->
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,800%7cRoboto+Mono:400,700%7cMerriweather:300%7cAbril+Fatface'
@@ -73,9 +73,9 @@
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="top-navigation-bar">
                         <ul class="nav navbar-nav navbar-right">
-                            <li class="active"><a href="/landlord/dashboard/tenant-applications">Applications</a></li>
+                            <li><a href="/landlord/dashboard/tenants">Tenants</a></li>
                             <li><a href="/landlord/dashboard/messages">Messages</a></li>
-                            <li><a href="/logout-landlord">Logout</a></li>                            
+                            <li><a href="/logout-landlord">Logout</a></li>
                         </ul>
                     </div>
                     <!-- /.navbar-collapse -->
@@ -93,82 +93,56 @@
             <div class="container">
                 <div class="row">
                     
-                    <div class="col-md-12">
+                        <div class="col-md-6">
                         <div class="address-wrapper wow fadeInUp" data-wow-delay="0.3s">
-                            <h1>Manual Applications</h1>
-                            <p>
-                                If a tenant has submitted an application by hand, you can easily add them to the system here.
-                                <br>
-                                Once the form below has been completed, our system will take care of the rest!
-                            </p>
+                        <h1>Message Tenants</h1>
+                        {{ range . }}
+                            <li style="color: #14962c;"><a style="color: black;" href="/landlord/dashboard.messages/users={{ .DecryptTenantName }}">{{ .DecryptTenantName }}</a></li>
+                        {{ end }}
                         </div>
                     </div>
-                </div>
+                    <div class="col-md-6">
+                    <div class="map-wrapper wow fadeInUp" data-wow-delay="0.6s">
+                        <div id="map"></div>                     
+                    </div>
+                    </div>
+            </div>
             </div>
         </section>
 
-        <section id="manage-applications" class="email-us page">
+        <section id="email-us" class="email-us page">
             <div class="container wow fadeInUp" data-wow-delay="0.3s">
                 <div class="row">
                     
                     <div class="col-md-6">
                     <div class="email-wrapper">
-                        <h1>Create New Tenant</h1>
+                        <h1>Send Message</h1>
                         <div class="section-snippet hidden-xs">
-                          <span class="snippet-heading">Creating A New Tenant Account</span>
-                          <span style="color: #FB0097;">Create a username for the tenant using their email address</span>  
+                          <span class="snippet-heading">View Dashboard</span>
+                          <span style="color: #FB0097;">Click <a href="/tenant/dashboard" style="color:#14962c;">here</a> to go back to your dashboard.</span>  
                         </div>
+
                         <div class="section-snippet hidden-xs">
-                            <span class="snippet-heading">Secure Password Generation</span>
-                            <span style="color: #FB0097;">Generate a secure password for the tenant using their passport or ID number and random characters</span>
+                          <span class="snippet-heading">Message Landlord</span>
+                          <span style="color: #FB0097;">Click <a href="/tenant/dashboard/messages" style="color:#14962c;">here</a> to view or send messages to your landlord.</span>  
                         </div>
+
                         <div class="section-snippet hidden-xs">
-                            <span class="snippet-heading">Tenant Notification</span>
-                            <span style="color: #FB0097;">Send a confirmation email to the tenant, notifying them that their application has been successful</span>
-                        </div>
-                        <div class="section-snippet hidden-xs">
-                            <span class="snippet-heading">Landlord Notification</span>
-                            <span style="color: #FB0097;">Notify the landlord via email, keeping them informed of the new tenant's addition</span>
+                            <span class="snippet-heading">Logout</span>
+                            <span style="color: #FB0097;">Click <a href="/logout-tenant" style="color:#14962c;">here</a> to logout.</span></span>
                         </div>
                      </div>  
                     </div>
                     <div class="col-md-6">
                         <div class="form-wrapper">
-                          <form action="/landlord/dashboard/new-tenant/submit" method="post">
-                              <label for="tenantFullName">Tenant Full Name:</label>
-                              <input type="text" name="tenantFullName" id="tenantFullName" placeholder="tenant full name" required>
-                              <label for="passportNumber">Passport / ID:</label>
-                              <input type="text" name="passportNumber" id="passportNumber" placeholder="tenant passport or ID number" required>
-                              <label for="tenantEmail">Tenant Email:</label>
-                              <input type="email" name="tenantEmail" id="tenantEmail" placeholder="tenant email address" required>
-                              <p>Please complete the following:</p>
-                              <label for="roomType">Room Type:</label>
-                              <select name="roomType" id="roomType" required>
-                                <option value="">Please Select</option>
-                                <option value="Single">Single Room</option>
-                                <option value="Double">Double Room</option>
-                                <option value="Ensuite">Ensuite</option>
-                                <option value="Self-contained">Self Contained</option>
-                              </select>
-                              <label for="moveInDate">Move In Date:</label>
-                              <input type="date" name="moveInDate" id="moveInDate" required>
-                              <label for="rentDue">Rent Due:</label>
-                              <p style="color: #FB0097;">Choose the date when rent is due each month (note: this date will recur on the same day every month)</p>
-                              <input type="date" name="rentDue" id="rentDue" required>
-                              <label for="monthlyRent">Monthly Rent:</label>
-                              <input type="number" name="monthlyRent" id="monthlyRent" placeholder="monthly rent" required>
-                              <label for="currency">Currency:</label>
-                              <select name="currency" id="currency" required>
-                                <option value="">Please Select</option>
-                                <option value="Bajan Dollars">Bajan Dollars</option>
-                                <option value="US Dolars">US Dolars</option>
-                                <option value="British Pounds">Britsh Pounds</option>
-                                <option value="Euros">Euro</option>
-                              </select>
-                              <input class="custom-button" type="submit" name="submit" value="Create Tenant">
+                          <form action="" method="post">
+                              <label for="tenantMessage">Message:</label>
+                              <textarea name="tenantMessage" id="tenantMessage" cols="30" rows="10" aria-required="true"></textarea>
+                              <input class="custom-button" type="submit" name="submit" value="Send Message">
                           </form> 
                     </div>
                     </div>
+
                 </div>
             </div>
         </section>
@@ -256,4 +230,3 @@
 </body>
 
 </html>
-

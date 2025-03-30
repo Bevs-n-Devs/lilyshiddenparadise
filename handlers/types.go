@@ -82,3 +82,8 @@ type ShowTenantInformation struct {
 	Currency    string `json:"currency"`
 	Error       ErrorMessages
 }
+
+type ShowLandlordTenants struct {
+	ID                int    `json:"id"`
+	DecryptTenantName string `json:"decrypt_tenant_name"`
+}

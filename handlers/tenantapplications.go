@@ -98,6 +98,34 @@ func LandlordTenantApplications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// set new cookies for landlord tenants dashboard page
+	createLandlordDashboardTenantsSessionCookie := middleware.LandlordDashboardTenantsSessionCookie(w, newSessionToken, newExpiryTime)
+	if !createLandlordDashboardTenantsSessionCookie {
+		logs.Logs(logErr, "Failed to get session cookie for landlord tenants dashboard. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+session+cookie", http.StatusSeeOther)
+		return
+	}
+	createLandlordDashboardTenantsCSRFTokenCookie := middleware.LandlordDashboardTenantsCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
+	if !createLandlordDashboardTenantsCSRFTokenCookie {
+		logs.Logs(logErr, "Failed to get CSRF token cookie for landlord tenants dashboard. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+CSRF+token+cookie", http.StatusSeeOther)
+		return
+	}
+
+	// set new cookies to message dashboard page
+	createLanlordMessageDashboardSessionCookies := middleware.LandlordMessagesDashboardSessionCookie(w, newSessionToken, newExpiryTime)
+	if !createLanlordMessageDashboardSessionCookies {
+		logs.Logs(logErr, "Failed to get session cookie for landlord message dashboard. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+session+cookie", http.StatusSeeOther)
+		return
+	}
+	createLanlordMessageDashboardCSRFTokenCookie := middleware.LandlordMessagesDashboardCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
+	if !createLanlordMessageDashboardCSRFTokenCookie {
+		logs.Logs(logErr, "Failed to get CSRF token cookie for landlord message dashboard. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+CSRF+token+cookie", http.StatusSeeOther)
+		return
+	}
+
 	// set cookie to logout landlord
 	logoutSessionCookie := middleware.LogoutLandlordSessionCookie(w, newSessionToken)
 	if !logoutSessionCookie {

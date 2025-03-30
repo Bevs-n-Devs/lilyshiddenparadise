@@ -52,3 +52,8 @@ type GetTenantInformation struct {
 	MonthlyRent []byte `json:"encrypt_monthly_rent"`
 	Currency    string `json:"currency"`
 }
+
+type LandlordTenants struct {
+	ID                int    `json:"id"`
+	EncryptTenantName []byte `json:"encrypt_tenant_name"`
+}

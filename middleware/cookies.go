@@ -564,3 +564,27 @@ func SubmitMessageToLandlordCSRFTokenCookie(w http.ResponseWriter, csrfToken str
 	})
 	return true
 }
+
+func LandlordMessagesDashboardSessionCookie(w http.ResponseWriter, sessionToken string, expiryTime time.Time) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    sessionToken,
+		Expires:  expiryTime,
+		HttpOnly: true,
+		Path:     "/landlord/dashboard/messages",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
+
+func LandlordMessagesDashboardCSRFTokenCookie(w http.ResponseWriter, csrfToken string, expiryTime time.Time) bool {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "csrf_token",
+		Value:    csrfToken,
+		Expires:  expiryTime,
+		HttpOnly: false,
+		Path:     "/landlord/dashboard/messages",
+		SameSite: http.SameSiteStrictMode,
+	})
+	return true
+}
