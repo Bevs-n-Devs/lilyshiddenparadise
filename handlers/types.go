@@ -1,6 +1,9 @@
 package handlers
 
-import "html/template"
+import (
+	"html/template"
+	"time"
+)
 
 const (
 	localPort = ":9001"
@@ -86,4 +89,15 @@ type ShowTenantInformation struct {
 type ShowLandlordTenants struct {
 	ID                int    `json:"id"`
 	DecryptTenantName string `json:"decrypt_tenant_name"`
+}
+
+type ShowMessages struct {
+	LandlordID   int       `json:"landlord_id"`
+	TenantID     int       `json:"tenant_id"`
+	SenderID     int       `json:"sender_id"`
+	SenderType   string    `json:"sender_type"`
+	ReceiverID   int       `json:"receiver_id"`
+	ReceiverType string    `json:"receiver_type"`
+	Message      string    `json:"message"`
+	SentAt       time.Time `json:"sent_at"`
 }

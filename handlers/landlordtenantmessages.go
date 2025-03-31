@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/db"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
@@ -10,7 +11,7 @@ import (
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
 )
 
-func LandlordMessages(w http.ResponseWriter, r *http.Request) {
+func LandlordTenantMessages(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		logs.Logs(logErr, fmt.Sprintf("Invalid request method: %s. Redirecting back to landlord login page.", r.Method))
 		http.Redirect(w, r, "/login/landlord?badRequest=BAD+REQUEST+400:+Invalid+request+method", http.StatusBadRequest)
@@ -48,6 +49,41 @@ func LandlordMessages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// get the URL prefix of the current page
+	tenantID := strings.TrimPrefix(r.URL.Path, "/landlord/dashboard/messages/tenant/")
+
+	// get all messages between landlord and tenant
+	messages, err := db.GetMessageBetweenLandlordsAndTenant(tenantID)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to get messages between landlords and tenants: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Failed to get messages between landlords and tenants: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	var showMessages []ShowMessages
+	for _, message := range messages {
+		var showMessage ShowMessages
+		showMessage.LandlordID = message.LandlordID
+		showMessage.TenantID = message.TenantID
+
+		showMessage.SenderID = message.SenderID
+		showMessage.SenderType = message.SenderType
+		showMessage.ReceiverID = message.ReceiverID
+		showMessage.ReceiverType = message.ReceiverType
+		showMessage.SentAt = message.SentAt
+
+		decryptMessage, err := utils.Decrypt(message.EncryptMessage)
+		if err != nil {
+			logs.Logs(logErr, fmt.Sprintf("Failed to decrypt message: %s", err.Error()))
+			http.Error(w, fmt.Sprintf("Failed to decrypt message: %s", err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		showMessage.Message = string(decryptMessage)
+
+		showMessages = append(showMessages, showMessage)
+	}
+
 	// TODO! Set cookies for each available page
 
 	// set new cookies for landlord dashboard
@@ -77,17 +113,32 @@ func LandlordMessages(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+CSRF+token+cookie", http.StatusSeeOther)
 	}
 
-	// set cookies to landlord messages page
-	createLandlordMessagesDashboardSessionCookie := middleware.LandlordMessagesDashboardSessionCookie(w, newSessionToken, newExpiryTime)
-	if !createLandlordMessagesDashboardSessionCookie {
-		logs.Logs(logErr, "Failed to create session for the landlord messages dashboard page. Redirecting back to login page")
-		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+session+cookie", http.StatusSeeOther)
+	// set cookie to divert to selected tenant messages page
+	createLandlordTenantMessagesSessionCookie := middleware.LandlordTenantMessagesSessionCookie(w, tenantID, newSessionToken, newExpiryTime)
+	if !createLandlordTenantMessagesSessionCookie {
+		logs.Logs(logErr, "Failed to get session cookie for landlord tenant messages. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+session+cookie", http.StatusSeeOther)
 		return
 	}
-	createLandlordMessagesDashboardCSRFTokenCookie := middleware.LandlordMessagesDashboardCSRFTokenCookie(w, newCsrfToken, newExpiryTime)
-	if !createLandlordMessagesDashboardCSRFTokenCookie {
-		logs.Logs(logErr, "Failed to create CSRF token for the landlord messages dashboard page. Redirecting back to login page")
-		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+create+CSRF+token+cookie", http.StatusSeeOther)
+	createLandlordTenantMessagesCSRFTokenCookie := middleware.LandlordTenantMessagesCSRFTokenCookie(w, tenantID, newCsrfToken, newExpiryTime)
+	if !createLandlordTenantMessagesCSRFTokenCookie {
+		logs.Logs(logErr, "Failed to get CSRF token cookie for landlord tenant messages. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+CSRF+token+cookie", http.StatusSeeOther)
+		return
+	}
+
+	// set cookie to process message for selected tenant
+	createSubmitMessageFromLandlordSessionCookie := middleware.SubmitMessageFromLandlordSessionCookie(w, tenantID, newSessionToken, newExpiryTime)
+	if !createSubmitMessageFromLandlordSessionCookie {
+		logs.Logs(logErr, "Failed to get session cookie for landlord tenant messages. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+session+cookie", http.StatusSeeOther)
+		return
+	}
+	createSubmitMessageFromLandlordCSRFTokenCookie := middleware.SubmitMessageFromLandlordCSRFTokenCookie(w, tenantID, newCsrfToken, newExpiryTime)
+	if !createSubmitMessageFromLandlordCSRFTokenCookie {
+		logs.Logs(logErr, "Failed to get CSRF token cookie for landlord tenant messages. Redirecting to landlord login page")
+		http.Redirect(w, r, "/login/landlord?authenticationError=UNAUTHORIZED+401:+Error+authenticating+landlord.+Failed+to+get+CSRF+token+cookie", http.StatusSeeOther)
+		return
 	}
 
 	// set cookies to logout
@@ -104,31 +155,7 @@ func LandlordMessages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// get landlord tenant names
-	encryptedEncryptedTenantNames, err := db.GetTenantsByLandlordEmail(landlordEmail)
-	if err != nil {
-		logs.Logs(logErr, fmt.Sprintf("Failed to get tenants: %s", err.Error()))
-		http.Error(w, fmt.Sprintf("Failed to get tenants: %s", err.Error()), http.StatusInternalServerError)
-		return
-	}
-
-	// decrypt tenant names
-	var showTenantNames []ShowLandlordTenants
-
-	for _, encryptedTenantName := range encryptedEncryptedTenantNames {
-		var showTenantName ShowLandlordTenants
-		tenantName, err := utils.Decrypt(encryptedTenantName.EncryptTenantName)
-		if err != nil {
-			logs.Logs(logErr, fmt.Sprintf("Failed to decrypt tenant name: %s", err.Error()))
-			http.Error(w, fmt.Sprintf("Failed to decrypt tenant name: %s", err.Error()), http.StatusInternalServerError)
-			return
-		}
-		showTenantName.DecryptTenantName = string(tenantName)
-		showTenantName.ID = encryptedTenantName.ID
-		showTenantNames = append(showTenantNames, showTenantName)
-	}
-
-	err = Templates.ExecuteTemplate(w, "landlordMessages.html", showTenantNames)
+	err = Templates.ExecuteTemplate(w, "messageTenant.html", showMessages)
 	if err != nil {
 		logs.Logs(logErr, fmt.Sprintf("Unable to load landlord dashboard: %s", err.Error()))
 		http.Error(w, fmt.Sprintf("Unable to load landlord dashboard: %s", err.Error()), http.StatusInternalServerError)

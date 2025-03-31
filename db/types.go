@@ -1,6 +1,9 @@
 package db
 
-import "database/sql"
+import (
+	"database/sql"
+	"time"
+)
 
 const (
 	logWarning = 2
@@ -56,4 +59,16 @@ type GetTenantInformation struct {
 type LandlordTenants struct {
 	ID                int    `json:"id"`
 	EncryptTenantName []byte `json:"encrypt_tenant_name"`
+}
+
+type Message struct {
+	LandlordID     int
+	TenantID       int
+	SenderID       int
+	SenderType     string
+	ReceiverID     int
+	ReceiverType   string
+	EncryptMessage []byte
+	Message        string
+	SentAt         time.Time
 }

@@ -44,7 +44,8 @@ func StartHTTPServer() {
 	http.HandleFunc("/landlord/dashboard/new-tenant", LandlordNewTenant)
 	http.HandleFunc("/landlord/dashboard/new-tenant/submit", LandlordSubmitNewTenant)
 	http.HandleFunc("/landlord/dashboard/messages", LandlordMessages)
-	// http.HandleFunc("/landlord/send-message", SendMessageToTenant)
+	http.HandleFunc("/landlord/dashboard/messages/tenant/", LandlordTenantMessages)
+	http.HandleFunc("/landlord/send-message/", SendMessageToTenant)
 
 	// protected tenant routes
 	http.HandleFunc("/tenant/dashboard", TenantDashboard)

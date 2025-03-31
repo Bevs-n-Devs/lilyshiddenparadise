@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	_ "embed"
@@ -1636,4 +1637,76 @@ func GetTenantsByLandlordEmail(landlordEmail string) ([]LandlordTenants, error) 
 		tenants = append(tenants, tenant)
 	}
 	return tenants, nil
+}
+
+func GetMessageBetweenLandlordsAndTenant(tenantID string) ([]Message, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return nil, errors.New("database connection is not initialized")
+	}
+
+	// get landlord email via environment variable
+	if os.Getenv("LANDLORD_EMAIL") == "" {
+		logs.Logs(logWarning, "Could not get landlord email from hosting platform. Loading from .env file...")
+		err := env.LoadEnv("env/.env")
+		if err != nil {
+			logs.Logs(logErr, fmt.Sprintf("Could not load environment variables from .env file: %s", err.Error()))
+			return nil, err
+		}
+	}
+
+	landlordEmail := os.Getenv("LANDLORD_EMAIL")
+	if landlordEmail == "" {
+		logs.Logs(logDbErr, "Landlord email is empty!")
+		return nil, errors.New("landlord email is empty")
+	}
+
+	// get landlord id
+	landlordId, err := GetLandlordIdByEmail(landlordEmail)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to get landlord ID: %s", err.Error()))
+		return nil, err
+	}
+
+	// covert tenant id to int
+	tenantIDInt, err := strconv.Atoi(tenantID)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to convert tenant ID to int: %s", err.Error()))
+		return nil, err
+	}
+
+	query := `
+	SELECT sender_id, sender_type, receiver_id, receiver_type, encrypt_message, sent_at
+	FROM lhp_messages
+	WHERE (sender_id = $1 AND receiver_id = $2) OR (sender_id = $2 AND receiver_id = $1);
+	`
+
+	rows, err := db.Query(query, landlordId, tenantIDInt)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to get messages: %s", err.Error()))
+		return nil, err
+	}
+	defer rows.Close()
+
+	var messages []Message
+	for rows.Next() {
+		var message Message
+		message.LandlordID = landlordId
+		message.TenantID = tenantIDInt
+
+		err := rows.Scan(
+			&message.SenderID,
+			&message.SenderType,
+			&message.ReceiverID,
+			&message.ReceiverType,
+			&message.EncryptMessage,
+			&message.SentAt,
+		)
+		if err != nil {
+			logs.Logs(logDbErr, fmt.Sprintf("Failed to scan messages: %s", err.Error()))
+			return nil, err
+		}
+		messages = append(messages, message)
+	}
+	return messages, nil
 }
