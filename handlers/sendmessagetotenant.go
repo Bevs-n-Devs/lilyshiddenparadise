@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/db"
+	"github.com/Bevs-n-Devs/lilyshiddenparadise/email"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/middleware"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/utils"
@@ -97,6 +98,29 @@ func SendMessageToTenant(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logs.Logs(logErr, fmt.Sprintf("Error sending message to tenant: %s", err.Error()))
 		http.Error(w, fmt.Sprintf("Error sending message to tenant: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	// TODO: send email notification to tenant
+	// get tenant email
+	encryptTenantEmail, err := db.GetTenantEncryptedEmailById(tenantIdInt)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Error getting tenant email: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Error getting tenant email: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	tenantEmail, err := utils.Decrypt([]byte(encryptTenantEmail))
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Error decrypting tenant email: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Error decrypting tenant email: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	err = email.NotifyTenantNewMessageFromLandlord(string(tenantEmail), landlordMessage)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Error sending email notification to tenant: %s", err.Error()))
+		http.Error(w, fmt.Sprintf("Error sending email notification to tenant: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
 

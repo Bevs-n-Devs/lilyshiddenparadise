@@ -888,6 +888,27 @@ func GetTenantIdByEmail(email string) (int, error) {
 	return tenantId, nil
 }
 
+func GetTenantEncryptedEmailById(tenantId int) (string, error) {
+	if db == nil {
+		logs.Logs(logDbErr, "Database connection is not initialized")
+		return "", errors.New("database connection is not initialized")
+	}
+
+	var encryptedEmail string
+	query := `
+	SELECT encrypt_email
+	FROM lhp_tenants
+	WHERE id=$1;
+	`
+	err := db.QueryRow(query, tenantId).Scan(&encryptedEmail)
+	if err != nil {
+		logs.Logs(logDbErr, fmt.Sprintf("Failed to get encrypted email: %s", err.Error()))
+		return "", err
+	}
+
+	return encryptedEmail, nil
+}
+
 func SendMessage(senderId int, senderType string, receiverID int, receiverType string, message string) error {
 	if db == nil {
 		logs.Logs(logDbErr, "Database connection is not initialized")
