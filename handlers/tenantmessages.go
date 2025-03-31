@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/db"
 	"github.com/Bevs-n-Devs/lilyshiddenparadise/logs"
@@ -123,8 +124,46 @@ func TenantMessages(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: get all messages between landlord and tenant via their email => ID
+	tenantId, err := db.GetTenantIdByEmail(tenantEmail)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to get tenant ID: %s", err.Error()))
+		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+get+tenant+ID", http.StatusInternalServerError)
+		return
+	}
+	tenantIdStr := strconv.Itoa(tenantId)
 
-	err = Templates.ExecuteTemplate(w, "messageLandlord.html", nil)
+	messages, err := db.GetMessageBetweenLandlordsAndTenant(tenantIdStr)
+	if err != nil {
+		logs.Logs(logErr, fmt.Sprintf("Failed to get messages between landlord and tenant: %s", err.Error()))
+		http.Redirect(w, r, "/login/tenant?internalServerError=INTERNAL+SERVER+ERROR+500:+Failed+to+get+messages+between+landlords+and+tenants", http.StatusInternalServerError)
+		return
+	}
+
+	var showMessages []ShowMessages
+	for _, message := range messages {
+		var showMessage ShowMessages
+		showMessage.LandlordID = message.LandlordID
+		showMessage.TenantID = message.TenantID
+
+		showMessage.SenderID = message.SenderID
+		showMessage.SenderType = message.SenderType
+		showMessage.ReceiverID = message.ReceiverID
+		showMessage.ReceiverType = message.ReceiverType
+		showMessage.SentAt = message.SentAt
+
+		decryptMessage, err := utils.Decrypt(message.EncryptMessage)
+		if err != nil {
+			logs.Logs(logErr, fmt.Sprintf("Failed to decrypt message: %s", err.Error()))
+			http.Error(w, fmt.Sprintf("Failed to decrypt message: %s", err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		showMessage.Message = string(decryptMessage)
+
+		showMessages = append(showMessages, showMessage)
+	}
+
+	err = Templates.ExecuteTemplate(w, "messageLandlord.html", showMessages)
 	if err != nil {
 		logs.Logs(logErr, fmt.Sprintf("Unable to load message landlord: %s", err.Error()))
 		http.Error(w, fmt.Sprintf("Unable to load message landlord: %s", err.Error()), http.StatusInternalServerError)

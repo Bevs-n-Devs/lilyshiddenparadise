@@ -99,16 +99,14 @@
                         <h1>Message Dashboard</h1>
                         <table class="address-table">
                                 <tbody>
+                                    {{ range .}}
                                     <tr>
-                                        <td>Tenant:</td>
-                                        <td>tenant message</td>
-                                        <td>tenant time</td>
+                                        <td style="color: #14962c;">Sender:</td>
+                                        <td style="color: black;">{{ .SenderType }}</td>
+                                        <td style="color: #14962c;">Message:</td>
+                                        <td style="color: black;">{{ .Message }}</td>
                                     </tr>
-                                    <tr>
-                                        <td>Landord:</td>
-                                        <td>landlord message</td>
-                                        <td>landlord time</td>
-                                    </tr>
+                                    {{ end }}
                                 </tbody>
                             </table>
                             </div>
