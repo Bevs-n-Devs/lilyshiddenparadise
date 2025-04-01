@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--meta tags ends-->
 
-    <title>Message Landlord | Lilys Hidden Paradise</title>
+    <title>Message Dashboard | Lilys Hidden Paradise</title>
 
     <!--- Links to google fonts -->
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,800%7cRoboto+Mono:400,700%7cMerriweather:300%7cAbril+Fatface'
@@ -67,16 +67,15 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a class="navbar-brand" href="/tenant/dashboard">My Dashboard</a>
+                        <a class="navbar-brand" href="/landlord/dashboard">Dashboard</a>
                     </div>
 
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="top-navigation-bar">
                         <ul class="nav navbar-nav navbar-right">
-                            <li class="active"><a href="/tenant/dashboard">Dashboard</a></li>
-                            <li><a href="/tenant/dashboard/account">Account</a></li>
-                            <li><a href="/tenant/dashboard/messages">Messages</a></li>
-                            <li><a href="/logout-tenant">Logout</a></li>
+                            <li><a href="/landlord/dashboard/tenants">Tenants</a></li>
+                            <li><a href="/landlord/dashboard/messages">Messages</a></li>
+                            <li><a href="/logout-landlord">Logout</a></li>
                         </ul>
                     </div>
                     <!-- /.navbar-collapse -->
@@ -96,20 +95,11 @@
                     
                         <div class="col-md-6">
                         <div class="address-wrapper wow fadeInUp" data-wow-delay="0.3s">
-                        <h1>Message Dashboard</h1>
-                        <table class="address-table">
-                                <tbody>
-                                    {{ range .}}
-                                    <tr>
-                                        <td style="color: #14962c;">Sender:</td>
-                                        <td style="color: black;">{{ .SenderType }}</td>
-                                        <td style="color: #14962c;">Message:</td>
-                                        <td style="color: black;">{{ .Message }}</td>
-                                    </tr>
-                                    {{ end }}
-                                </tbody>
-                            </table>
-                            </div>
+                        <h1>Message Tenants</h1>
+                        {{ range . }}
+                            <li style="color: #14962c;"><a style="color: black;" href="/landlord/dashboard/messages/tenant/{{ .ID }}">{{ .DecryptTenantName }}</a></li>
+                        {{ end }}
+                        </div>
                     </div>
                     <div class="col-md-6">
                     <div class="map-wrapper wow fadeInUp" data-wow-delay="0.6s">
@@ -119,44 +109,6 @@
             </div>
             </div>
         </section>
-
-        <section id="email-us" class="email-us page">
-            <div class="container wow fadeInUp" data-wow-delay="0.3s">
-                <div class="row">
-                    
-                    <div class="col-md-6">
-                    <div class="email-wrapper">
-                        <h1>Send Message</h1>
-                        <div class="section-snippet hidden-xs">
-                          <span class="snippet-heading">View Dashboard</span>
-                          <span style="color: #FB0097;">Click <a href="/tenant/dashboard" style="color:#14962c;">here</a> to go back to your dashboard.</span>  
-                        </div>
-
-                        <div class="section-snippet hidden-xs">
-                          <span class="snippet-heading">Message Landlord</span>
-                          <span style="color: #FB0097;">Click <a href="/tenant/dashboard/messages" style="color:#14962c;">here</a> to view or send messages to your landlord.</span>  
-                        </div>
-
-                        <div class="section-snippet hidden-xs">
-                            <span class="snippet-heading">Logout</span>
-                            <span style="color: #FB0097;">Click <a href="/logout-tenant" style="color:#14962c;">here</a> to logout.</span></span>
-                        </div>
-                     </div>  
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-wrapper">
-                          <form action="/tenant/send-message" method="post">
-                              <label for="tenantMessage">Message:</label>
-                              <textarea name="tenantMessage" id="tenantMessage" cols="30" rows="10" aria-required="true"></textarea>
-                              <input class="custom-button" type="submit" name="submit" value="Send Message">
-                          </form> 
-                    </div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
 
 
          <!-- footer section starts -->

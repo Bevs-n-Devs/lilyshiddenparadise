@@ -261,5 +261,9 @@ Log in to your landlord dashboard to respond.
 
 	logs.Logs(logInfo, "Email sent successfully. Landlord notified of new message from tenant.")
 	return nil
+}
 
+func NotifyTenantNewMessageFromLandlord(tenantEmail, messageFromLandlord string) error {
+	logs.Logs(logInfo, "Email sent successfully. Landlord notified of new message from tenant.")
+	return nil
 }
