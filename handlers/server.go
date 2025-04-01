@@ -60,17 +60,17 @@ func StartHTTPServer() {
 
 	// start server on local machine if hosting platform port is not set
 	if httpPort == "" {
-		logs.Logs(logWarn, fmt.Sprintf("Could not get PORT from hosting platform. Defaulting to http://localhost%s...", localPort))
+		logs.Logs(logWarn, fmt.Sprintf("Could not get PORT from hosting platform. Defaulting to http://localhost:%s...", localPort))
 		httpPort = localPort
-		err := http.ListenAndServe(localPort, nil)
+		err := http.ListenAndServe("localhost:"+localPort, nil)
 		if err != nil {
 			logs.Logs(logErr, fmt.Sprintf("Failed to start HTTP server: %s", err.Error()))
 		}
 	}
 
 	// start server on hosting platform port
-	logs.Logs(logInfo, fmt.Sprintf("HTTP server running on http://localhost%s", httpPort))
-	err = http.ListenAndServe(httpPort, nil)
+	logs.Logs(logInfo, fmt.Sprintf("HTTP server running on http://localhost:%s", httpPort))
+	err = http.ListenAndServe(":"+httpPort, nil)
 	if err != nil {
 		logs.Logs(logErr, fmt.Sprintf("Error starting HTTP server: %s", err.Error()))
 	}
