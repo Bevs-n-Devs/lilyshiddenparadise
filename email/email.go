@@ -50,7 +50,11 @@ func NotifyLandlordNewApplication() error {
 
 	// create email message
 	subject := "New Tenant Application"
-	body := "A new tenant application has been submitted. Please login to the landlord dashboard to view the application."
+	body := `
+A new tenant application has been submitted. Please login to the landlord dashboard to view the application.
+
+Login Now: https://lilyshiddenparadise.com/login/landlord
+	`
 	auth := smtp.PlainAuth("", smptUser, smptPassword, smptHost)
 	err := smtp.SendMail(smptHost+":"+smptPort, auth, smptUser, []string{recipient, ccEmail}, []byte("Subject: "+subject+"\n\n"+body))
 	if err != nil {
@@ -102,7 +106,12 @@ func NotifyTenantApplicationProcessing(tenantEmail string) error {
 
 	// create email message
 	subject := "Tenant Application Processing"
-	body := "Your tenant application is being processed. Please wait for further instructions."
+	body := `
+Your tenant application is being processed. Please wait for further instructions.
+
+Lilys Hidden Paradise
+https://lilyshiddenparadise.com
+`
 	auth := smtp.PlainAuth("", smptUser, smptPassword, smptHost)
 	err := smtp.SendMail(smptHost+":"+smptPort, auth, smptUser, []string{recipient, ccEmail}, []byte("Subject: "+subject+"\n\n"+body))
 	if err != nil {
@@ -158,6 +167,11 @@ YOUR ROOM DETAILS:
 	Monthly Rent: %s %s per month
 
 Please login to the tenant dashboard to view your account details.
+
+Login Now: https://lilyshiddenparadise.com/login/tenant
+
+Lilys Hidden Paradise
+https://lilyshiddenparadise.com
 	`, tenantUsername, tenantPassword, roomType, moveInDate, rentDue, monthlyRent, currency)
 
 	auth := smtp.PlainAuth("", smptUser, smptPassword, smptHost)
@@ -213,6 +227,11 @@ TENANT ROOM DETAILS:
 	Monthly Rent: %s %s per month
 
 Please login to the landlord dashboard to view more details.
+
+Login Now: https://lilyshiddenparadise.com/login/landlord
+
+Lilys Hidden Paradise
+https://lilyshiddenparadise.com
 	`, tenantUsername, tenantPassword, roomType, moveInDate, rentDue, monthlyRent, currency)
 
 	auth := smtp.PlainAuth("", smptUser, smptPassword, smptHost)
@@ -250,6 +269,11 @@ MESAGE CONTENT:
 %s
 
 Log in to your landlord dashboard to respond.
+
+Login  Now: https://lilyshiddenparadise.com/login/landlord
+
+Lilys Hidden Paradise
+https://lilyshiddenparadise.com
 	`, tenantName, messageFromTenant)
 
 	auth := smtp.PlainAuth("", smptUser, smptPassword, smptHost)
