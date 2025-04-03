@@ -103,174 +103,83 @@
         </header>
         
         <!-- main header ends-->
-        <section id="address" class="address page-top">
-            <div class="container">
+        <section id="who-are-we" class="who-are-we page">
+            <div class="container wow fadeInUp">
                 <div class="row">
-                    
-                        <div class="col-md-6">
-                        <div class="address-wrapper wow fadeInUp" data-wow-delay="0.3s">
-                        <h1>Our Address</h1>
-                        <table class="address-table">
-                                <tbody>
-                                    <tr>
-                                        <td>Location</td>
-                                        <td>Bournes Village, St George<br>Barbados</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Phone:</td>
-                                        <td>+2462302047</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Email:</td>
-                                        <td>foobar@email.com</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Instagram:</td>
-                                        <td>account.com/pages/foobar</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </div>
+                    <br><br><br>
+                    <div class="col-sm-5 col-md-6">
+                        <h1 style="color: #14962C;">Manage Your Tenants with Ease</h1>
                     </div>
-                    <div class="col-md-6">
-                    <div class="map-wrapper wow fadeInUp" data-wow-delay="0.6s">
-                        <div id="map"></div>                     
-                    </div>
-                    </div>
-                    
-                    
-            </div>
-            </div>
-        </section>
-
-        <section id="email-us" class="email-us page">
-            <div class="container wow fadeInUp" data-wow-delay="0.3s">
-                <div class="row">
-                    
-                    <div class="col-md-6">
-                    <div class="email-wrapper">
-                        <h1>Tenancy Form</h1>
-                        <div class="section-snippet hidden-xs">
-                          <span class="snippet-heading">Prefer Printable Version?</span>
-                          <span style="color: #FB0097;">Click <a href="/static/pdf/tenancy-application.pdf" style="color:#14962c;" download>here</a> to download the tenancy form which you can complete and hand back to us</span>  
-                        </div>
-                     </div>  
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-wrapper">
-                          <form action="/tenancy-form/submit" method="post">
-                            {{ if .DatabaseError }}
-                                <p style="color: red;">{{ .DatabaseError }}</p>
-                              {{ end }}
-                              <label for="fullName">Full Name:</label>
-                              <input type="text" name="fullName" id="name" placeholder="your full name..." required>
-                              <label for="dob">Date of Birth:</label>
-                              {{ if .AgeError }}
-                                <p style="color: red;">{{ .AgeError }}</p>
-                              {{ end }}
-                              <input type="date" name="dob" id="dob" placeholder="your date of birth..." required>
-                              <label for="passportNumber">Passport Number:</label>
-                              <input type="text" name="passportNumber" id="passportNumber" placeholder="your passport number..." required>
-                              <label for="phoneNumber">Phone Number:</label>
-                              <input type="number" name="phoneNumber" id="phoneNumber" placeholder="your phone number..." required>
-                              <label for="email">Your email:</label>
-                              <input type="email" name="email" id="email" placeholder="your email.." required>
-                              <label for="occupation">Occupation:</label>
-                              <input type="text" name="occupation" id="occupation" placeholder="your occupation..." required>
-                              <label for="employedBy">Employed By:</label>
-                              <input type="text" name="employedBy" id="employedBy" placeholder="employed by..." required>
-                              <label for="workNumber">Work Number:</label>
-                              <input type="number" name="workNumber" id="workNumber" placeholder="your work number..." required>
-                              <label for="emergencyName">Emergency Name:</label>
-                              <input type="text" name="emergencyName" id="emergencyName" placeholder="emergency name..." required>
-                              <label for="emergencyNumber">Emergency Contact Number:</label>
-                              <input type="number" name="emergencyNumber" id="emergencyNumber" placeholder="your emergency contact number..." required>
-                              <label for="emergencyAddress">Emergency Contact Address:</label>
-                              <input type="text" name="emergencyAddress" id="emergencyAddress" placeholder="your emergency contact address..." required>
-                              <label for="evicted">Have You Ever Been Evicted?</label>
-                              <select name="evicted" id="evicted" required>
-                                <option disabled value="">Please Select</option>
-                                <option value="yes">Yes</option>
-                                <option value="no">No</option>
-                              </select>
-                              <label for="evictedReason">If yes, When and Why?</label>
-                              {{ if .EvictedError }}
-                                <p style="color: red;">{{ .EvictedError }}</p>
-                              {{ end }}
-                              <textarea type="text" name="evictedReason" id="evictedReason" placeholder="please explain when and why you were evicted..."></textarea>
-                              <label for="convicted">Have you ever been convicted of a felony?</label>
-                              <select name="convicted" id="convicted" required>
-                                <option disabled value="">Please Select</option>
-                                <option value="yes">Yes</option>
-                                <option value="no">No</option>
-                              </select>
-                              <label for="convictedReason">If yes, When and Why?</label>
-                              {{ if .ConvictedError }}
-                                <p style="color: red;">{{ .ConvictedError }}</p>
-                              {{ end }}
-                              <textarea type="text" name="convictedReason" id="convictedReason" placeholder="please explain when and why you were convicted..."></textarea>
-                              <label for="smoke">Do You Smoke?</label>
-                              <select name="smoke" id="smoke" required>
-                                <option disabled value="">Please Select</option>
-                                <option value="yes">Yes</option>
-                                <option value="no">No</option>
-                              </select>
-                              <label for="pets">Do You Have Pets?</label>
-                              <select name="pets" id="pets" required>
-                                <option disabled value="">Please Select</option>
-                                <option value="yes">Yes</option>
-                                <option value="no">No</option>
-                              </select>
-                              <label for="vehicle">Do You Have A Vehicle?</label>
-                              <select name="vehicle" id="vehicle" required>
-                                <option disabled value="">Please Select</option>
-                                <option value="yes">Yes</option>
-                                <option value="no">No</option>
-                              </select>
-                              <label for="vehicleReg">If Yes, What Is The Vehicle Registration Number?</label>
-                              {{ if .VehicleError }}
-                                <p style="color: red;">{{ .VehicleError }}</p>
-                              {{ end }}
-                              <input type="text" name="vehicleReg" placeholder="vehicle registration number" id="vehicleReg">
-                              <label for="haveChildren">Do You Have Children?</label>
-                              <select name="haveChildren" id="haveChildren" required>
-                                <option disabled value="">Please Select</option>
-                                <option value="yes">Yes</option>
-                                <option value="no">No</option>
-                              </select>
-                              <label for="children">If yes, How Many?</label>
-                              {{ if .ChildrenError }}
-                                <p style="color: red;">{{ .ChildrenError }}</p>
-                              {{ end }}
-                              <textarea type="text" name="children" id="children" placeholder="how many children and their ages..."></textarea>
-                              <label for="refusedRent">Have You Willfully Refused To Pay Rent?</label>
-                              <select name="refusedRent" id="refusedRent" required>
-                                <option disabled value="">Please Select</option>
-                                <option value="yes">Yes</option>
-                                <option value="no">No</option>
-                              </select>
-                              <label for="refusedRentReason">If yes, please explain why:</label>
-                              {{ if .RefusedRentError }}
-                                <p style="color: red;">{{ .RefusedRentError }}</p>
-                              {{ end }}
-                              <textarea type="text" name="refusedRentReason" id="refusedRentReason" placeholder="please explain why you refused to pay rent..."></textarea>
-                              <label for="unstableIncome">Are There Any Circumstances That May Interrupt Your Income or Ability To Pay Rent?</label>
-                              <select name="unstableIncome" id="unstableIncome" required>
-                                <option disabled value="">Please Select</option>
-                                <option value="yes">Yes</option>
-                                <option value="no">No</option>
-                              </select>
-                              <label for="incomeReason">If yes, Please Explain:</label>
-                              {{ if .UnstableIncomeError }}
-                                <p style="color: red;">{{ .UnstableIncomeError }}</p>
-                              {{ end }}
-                              <textarea type="text" name="incomeReason" id="incomeReason" placeholder="please explain what circumstances may interrupt your income or ability to pay rent..."></textarea>
-                              <input class="custom-button" type="submit" name="submit" value="Submit Form">
-                          </form> 
-                    </div>
+                    <div class="col-sm-7 col-md-6">
+                        <p>
+                            As a landlord, managing your tenants can be a time-consuming task. But with our Tenant Dashboard, you can streamline the process and make informed decisions with ease.
+                        </p>
+                        <p>
+                            Our Tenant Dashboard allows you to view and manage all tenant applications in one place, including the ability to accept or deny applications. You can also manually create new tenant profiles, setting their move-in date, monthly rent amount and currency, room type, and rent due date.
+                        </p>
+                        <p>
+                            Additionally, our Tenant Dashboard gives you the ability to message available tenants directly, making it easy to communicate and stay connected. With our dashboard, you can manage your tenants with confidence and make the most of your rental properties.
+                        </p>
                     </div>
                 </div>
             </div>
+        </section>
+
+        <section id="services" class="services page">
+            <div class="container wow fadeInUp">
+                <div class="row">
+                    <div class="col-md-12 main-heading">
+                        <h1 style="color: #14962C;">Tenant Dashboard</h1>  
+                    </div>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="service clearfix">
+                                <div class="col-sm-4 col-md-5">
+                                    <span class="service-number">1</span>
+                                </div>
+                                <div class="col-sm-8 col-md-7">
+                                    <h2>View Applications</h2>
+                                    <p>
+                                        Easily view and manage tenant applications in one place. Our dashboard allows you to quickly review and respond to applications, making the process more efficient.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="service clearfix">
+                                <div class="col-sm-4 col-md-5">
+                                    <span class="service-number">2</span>
+                                </div>
+                                <div class="col-sm-8 col-md-7">
+                                    <h2>Manually Create a New Tenant</h2>
+                                    <p>
+                                        Create new tenant profiles manually, allowing you to easily manage and track tenant information. Our dashboard makes it easy to add new tenants and update existing profiles.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="service clearfix">
+                                <div class="col-sm-4 col-md-5">
+                                    <span class="service-number">3</span>
+                                </div>
+                                <div class="col-sm-8 col-md-7">
+                                    <h2>Message Tenants Directly</h2>
+                                    <p>
+                                        Communicate with tenants directly through our messaging system. Send and receive messages in real-time, and keep all your communication in one place.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>            
         </section>
 
 
