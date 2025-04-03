@@ -54,6 +54,12 @@ func NotifyLandlordNewApplication() error {
 A new tenant application has been submitted. Please login to the landlord dashboard to view the application.
 
 Login Now: https://lilyshiddenparadise.com/login/landlord
+
+
+Yours sincerely,
+
+Lily's Hidden Paradise
+https://lilyshiddenparadise.com
 	`
 	auth := smtp.PlainAuth("", smptUser, smptPassword, smptHost)
 	err := smtp.SendMail(smptHost+":"+smptPort, auth, smptUser, []string{recipient, ccEmail}, []byte("Subject: "+subject+"\n\n"+body))
@@ -109,7 +115,10 @@ func NotifyTenantApplicationProcessing(tenantEmail string) error {
 	body := `
 Your tenant application is being processed. Please wait for further instructions.
 
-Lilys Hidden Paradise
+
+Yours sincerely,
+
+Lily's Hidden Paradise
 https://lilyshiddenparadise.com
 `
 	auth := smtp.PlainAuth("", smptUser, smptPassword, smptHost)
@@ -170,7 +179,10 @@ Please login to the tenant dashboard to view your account details.
 
 Login Now: https://lilyshiddenparadise.com/login/tenant
 
-Lilys Hidden Paradise
+
+Yours sincerely,
+
+Lily's Hidden Paradise
 https://lilyshiddenparadise.com
 	`, tenantUsername, tenantPassword, roomType, moveInDate, rentDue, monthlyRent, currency)
 
@@ -230,7 +242,10 @@ Please login to the landlord dashboard to view more details.
 
 Login Now: https://lilyshiddenparadise.com/login/landlord
 
-Lilys Hidden Paradise
+
+Yours sincerely,
+
+Lily's Hidden Paradise
 https://lilyshiddenparadise.com
 	`, tenantUsername, tenantPassword, roomType, moveInDate, rentDue, monthlyRent, currency)
 
@@ -272,7 +287,10 @@ Log in to your landlord dashboard to respond.
 
 Login  Now: https://lilyshiddenparadise.com/login/landlord
 
-Lilys Hidden Paradise
+
+Yours sincerely,
+
+Lily's Hidden Paradise
 https://lilyshiddenparadise.com
 	`, tenantName, messageFromTenant)
 
